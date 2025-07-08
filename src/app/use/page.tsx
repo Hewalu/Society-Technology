@@ -12,7 +12,7 @@ export default function UsePage() {
     <main className="min-h-screen relative">
       <ParticleCanvas points={points} diversity={diversity} />
       <Button asChild className="absolute top-8 left-8">
-        <Link href="/train">Neutrainieren</Link>
+        <Link href="/train">Neu Trainieren</Link>
       </Button>
     </main>
   );

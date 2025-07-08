@@ -1,7 +1,20 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dataset } from "@/lib/datasets";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUser } from "@/context/UserContext";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { Info } from "lucide-react";
 import { useRef } from "react";
 
@@ -48,9 +61,39 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
                 </div>
                 <TooltipProvider>
                     <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Info className="h-[18px] w-[18px] text-gray-600" />
-                        </TooltipTrigger>
+                        <Dialog>
+                            <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                <DialogTrigger asChild>
+                                    <Info className="h-[18px] w-[18px] text-gray-600" />
+                                </DialogTrigger>
+                            </TooltipTrigger>
+                            <DialogContent onClick={(e) => e.stopPropagation()}>
+                                <DialogHeader>
+                                    <DialogTitle>{dataset.name}</DialogTitle>
+                                    <DialogDescription className="text-base mt-4">
+                                        {dataset.description}
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="flex flex-col gap-4 py-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="font-semibold">Kosten:</div>
+                                        <div>+{dataset.cost}</div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="font-semibold">Datenmenge:</div>
+                                        <div>+{dataset.points}</div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="font-semibold">Diversität:</div>
+                                        <div>+{dataset.diversity}</div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="font-semibold">Bias:</div>
+                                        <div>+{dataset.bias}</div>
+                                    </div>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                         <TooltipContent>
                             <p className="max-w-[200px]">{dataset.description}</p>
                         </TooltipContent>

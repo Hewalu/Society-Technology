@@ -40,39 +40,46 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity }) =>
                 this.radius = 1 + Math.random() * 1.5;
                 this.angle = Math.random() * 2 * Math.PI;
                 // Adjust orbit radius based on diversity - more diversity means wider orbit
-                this.orbitRadius = 80 + Math.random() * (50 + diversity * 5);
+                this.orbitRadius = 40 + Math.random() * (25 + diversity * 2.5);
             }
 
             update() {
                 let ax = 0;
                 let ay = 0;
 
-                // Attraction to center
-                const centerDx = center.x - this.x;
-                const centerDy = center.y - this.y;
+                // Attraction to a dynamic orbit, not just a static center
+                const orbitCenterX = center.x + Math.cos(this.angle * 0.5) * 50; // Slow circular motion of the anchor
+                const orbitCenterY = center.y + Math.sin(this.angle * 0.5) * 50;
+
+                const centerDx = orbitCenterX - this.x;
+                const centerDy = orbitCenterY - this.y;
                 const centerDist = Math.sqrt(centerDx * centerDx + centerDy * centerDy);
+
+                // Gentle pull towards the orbit
+                ax += centerDx * 0.0005;
+                ay += centerDy * 0.0005;
 
                 // Repulsion if too close to center
                 const minRingRadius = 50;
                 if (centerDist < minRingRadius) {
-                    const repelForce = 0.1 * (minRingRadius - centerDist);
+                    const repelForce = 0.05 * (minRingRadius - centerDist);
                     ax -= (centerDx / centerDist) * repelForce;
                     ay -= (centerDy / centerDist) * repelForce;
                 }
 
-                // Orbital motion
-                this.angle += 0.005;
+                // Orbital motion - reduced influence to allow for more deviation
+                this.angle += 0.01;
                 const targetOrbitX = center.x + Math.cos(this.angle) * this.orbitRadius;
                 const targetOrbitY = center.y + Math.sin(this.angle) * this.orbitRadius;
                 const orbitDx = targetOrbitX - this.x;
                 const orbitDy = targetOrbitY - this.y;
-                ax += orbitDx * 0.004;
-                ay += orbitDy * 0.004;
+                ax += orbitDx * 0.002;
+                ay += orbitDy * 0.002;
 
-                // Random motion
-                if (Math.random() < 0.02) {
-                    ax += (Math.random() - 0.5) * 0.5;
-                    ay += (Math.random() - 0.5) * 0.5;
+                // Smoother, more organic random motion
+                if (Math.random() < 0.05) { // Increased chance for course correction
+                    ax += (Math.random() - 0.5) * 0.8; // Stronger, but still smooth influence
+                    ay += (Math.random() - 0.5) * 0.8;
                 }
 
 
@@ -98,17 +105,22 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity }) =>
 
         const initParticles = () => {
             particles = [];
-            const numParticles = points > 0 ? points * 5 : 1000; // Use points prop, with a higher fallback
+            const numParticles = points > 0 ? points * 8 : 1000; // Use points prop, with a higher fallback
             for (let i = 0; i < numParticles; i++) {
                 const angle = Math.random() * 2 * Math.PI;
-                const minRadius = 50;
-                // Max radius is now based on screen height to keep the diameter within the viewport
-                const maxScreenRadius = (canvas.height / 2) - 300; // 50px buffer
-                const diversityFactor = (diversity / 100) * (maxScreenRadius - minRadius);
-                const maxRadius = minRadius + diversityFactor;
 
-                // Skew distribution towards the center
-                const randomFactor = Math.pow(Math.random(), 2);
+                // Adjust minRadius based on diversity. Low diversity allows particles in the center.
+                const minRadius = diversity > 10 ? 50 : 0;
+
+                // Max radius is now based on screen height to keep the diameter within the viewport
+                const maxScreenRadius = (canvas.height / 2) - 150; // 150px buffer
+
+                // Scale diversity effect with points. More points allow for more spread if diversity is high.
+                const diversityFactor = (diversity / 100) * (1 + points / 500);
+                const maxRadius = minRadius + (maxScreenRadius - minRadius) * diversityFactor;
+
+                // Skew distribution towards the center. Higher power means stronger skew.
+                const randomFactor = Math.pow(Math.random(), 3);
                 const radius = minRadius + randomFactor * (maxRadius - minRadius);
 
                 const x = center.x + Math.cos(angle) * radius;
