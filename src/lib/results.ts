@@ -1,34 +1,80 @@
 'use client';
 
 import { KiResult } from '@/context/UserContext';
+import { getCompetenceDescription } from './competence';
+
+const getTitle = (diversity: number, points: number, name: string): string => {
+    if (diversity > 65) {
+        return `${name} ist eine sehr diverse KI`;
+    }
+    if (diversity > 35) {
+        return `${name} ist eine ausgewogene KI`;
+    }
+    if (points > 150) {
+        return `${name} ist eine wirtschaftlich sehr starke KI`;
+    }
+    return `${name} ist noch am Anfang`;
+};
+
+const getCostDescription = (cost: number): string => {
+    if (cost > 80) {
+        return 'Die Entwicklung deiner KI war sehr kostspielig, was die wirtschaftliche Rentabilität zu einer Herausforderung macht.';
+    }
+    if (cost > 50) {
+        return 'Deine KI wurde mit einem moderaten Budget entwickelt, was eine gute Balance zwischen Kosten und Leistung darstellt.';
+    }
+    return 'Deine KI wurde sehr kosteneffizient entwickelt, was ihr einen wirtschaftlichen Vorteil verschafft.';
+};
+
+const getBiasDescription = (bias: number): string => {
+    if (bias > 60) {
+        return 'Sie weist einen starken Bias auf. Die Daten stammen überwiegend aus westlichen, angloamerikanischen Kulturen, wodurch andere Perspektiven vernachlässigt und Stereotype wie Rassismus und patriarchale Strukturen verstärkt werden.';
+    }
+    if (bias > 30) {
+        return 'Der Bias ist zwar vorhanden, aber vergleichsweise gering. Viele Antworten sind differenziert, auch wenn eine leichte Tendenz zu westlichen Werten erkennbar ist.';
+    }
+    return 'Dank einer vielfältigen Datengrundlage ist der Bias deiner KI erfreulich gering. Sie kann Anfragen aus verschiedenen kulturellen Kontexten fair und ausgewogen beantworten.';
+};
+
+const getDiversityDescription = (diversity: number): string => {
+    if (diversity > 65) {
+        return 'Sie wurde mit Daten aus aller Welt trainiert, was ihre Antworten kulturell reich und vielfältig macht.';
+    }
+    if (diversity > 35) {
+        return 'Sie wurde mit Datensätzen aus verschiedenen Regionen trainiert, was zu relativ ausgewogenen Ergebnissen führt.';
+    }
+    return 'Die Datensätze für das Training waren wenig divers. Dadurch sind die Fähigkeiten der KI begrenzt und ihre Antworten spiegeln eine einseitige Perspektive wider.';
+};
+
+const getPointsDescription = (points: number): string => {
+    if (points > 150) {
+        return `Deine KI hat eine beeindruckende Stärke erreicht. Der hohe Wissenshintergrund macht sie im globalen Wettbewerb konkurrenzfähig.`;
+    }
+    if (points > 80) {
+        return `Deine KI verfügt über eine solide Stärke und liefert verlässliche Ergebnisse.`;
+    }
+    return `Die Stärke deiner KI ist noch begrenzt. Es ist ein erster Schritt, aber es braucht mehr Daten, um ihr volles Potenzial zu entfalten.`;
+};
 
 export const getKiResult = (
     diversity: number,
     points: number,
     bias: number,
     cost: number,
-    name: string
+    name: string,
+    selectedDatasets: Set<string>
 ): KiResult => {
-    if (diversity > 65) {
-        return {
-            title: 'Du hast eine sehr diverse KI angelernt!',
-            description: `Sie ist mit Daten aus aller Welt trainiert worden und ihre Antworten sind von vielen verschiedenen kulturellen Einflüssen geprägt. Der Bias ist dementsprechend klein. Um Datensätzen aus verschiedenen Regionen und Kulturen mit der gleichen Gewichtung in den Lernprozess aufzunehmen zu können, wurden deutlich weniger Datensätze verwendet, wie aus manchen Regionen zu Verfügung gewesen wären. Deshalb bietet "${name}" in vielen Bereichen Antworten mit weniger Wissenshintergrund, was sie für viele Nutzer unattraktiver und insgesamt wirtschaftlich nicht erfolgreich macht.`,
-        };
-    }
-    if (diversity > 35) {
-        return {
-            title: 'Du hast eine ausgewogene KI angelernt!',
-            description: `Sie ist mit Datensätzen aus verschiedenen Regionen und Themenbereichen trainiert worden. Der Bias ist vorhanden, aber vergleichsweise gering – viele Antworten sind differenziert und reflektiert. Allerdings fehlt der KI oft die klare Spezialisierung auf wirtschaftlich relevante Themen, weshalb sie in manchen Bereichen etwas unscharf oder weniger effizient wirkt. Für Nutzer:innen bedeutet das: Sie bekommen meist faire, aber manchmal weniger konkrete Antworten. Deine KI ist kein Star im globalen Wettbewerb, dafür aber ein System mit ethischem Potenzial.`,
-        };
-    }
-    if (points > 150) {
-        return {
-            title: 'Du hast eine wirtschaftlich sehr starke KI angelernt!',
-            description: `Die Antworten deiner KI vor allem im Bereich Technik und Programmierung sind herausragend. Man kann "${name}" auch zu kulturellen und persönlichen Dingen befragen, aber hier unterliegen die Nutzer einem starken Bias. Da die Daten zum Anlernen deiner KI vor allem aus westlichen Ländern und vor allem aus angloamerikanischen Kulturen kommen, werden andere Kulturen bei der Verarbeitung von Nutzeranfragen wenig beachtet. So reproduzieren sich Machtsysteme wie das Patriachat, Rassismus und westliche Wertevorstellungen durch deine KI. Durch den hohen Wissenshintergrund sind die Nutzer sehr zufrieden und deine KI steigt in den Globalen Wettkampf mit den anderen großen LLMs.`,
-        };
-    }
+    const title = getTitle(diversity, points, name);
+    const description = [
+        getPointsDescription(points),
+        getCompetenceDescription(selectedDatasets),
+        getDiversityDescription(diversity),
+        getBiasDescription(bias),
+        getCostDescription(cost),
+    ].join(' \n\n');
+
     return {
-        title: 'Deine KI ist noch am Anfang!',
-        description: `Deine KI "${name}" wurde mit einer kleinen und wenig diversen Datenmenge trainiert. Ihre Fähigkeiten sind begrenzt und die Antworten weisen einen starken Bias auf. Sie ist für den professionellen Einsatz noch nicht bereit, aber es ist ein erster Schritt. Experimentiere mit mehr und diverseren Datensätzen, um ihr Potenzial zu steigern.`,
+        title,
+        description,
     };
 };

@@ -5,46 +5,33 @@ import Link from "next/link";
 import ParticleCanvas from '@/components/ParticleCanvas';
 import { useUser } from '@/context/UserContext';
 import React, { useEffect, useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { getKiResult } from '@/lib/results';
 import { KiResult } from '@/context/UserContext';
 
 export default function UsePage() {
-  const { name, points, bias, diversity, cost } = useUser();
-  const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const { name, points, diversity, bias, cost, selectedDatasets } = useUser();
   const [kiResult, setKiResult] = useState<KiResult | null>(null);
 
   useEffect(() => {
-    setKiResult(getKiResult(diversity, points, bias, cost, name));
-  }, [diversity, points, name, bias, cost]);
+    setKiResult(getKiResult(diversity, points, bias, cost, name, selectedDatasets));
+  }, [diversity, points, bias, cost, name, selectedDatasets]);
 
   return (
-    <main className="min-h-screen relative">
-      <ParticleCanvas points={points} diversity={diversity} />
-      <Button asChild className="absolute top-8 left-8">
-        <Link href="/train">Neu Trainieren</Link>
-      </Button>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{kiResult?.title}</DialogTitle>
-            <DialogDescription className="pt-4 whitespace-pre-wrap">
-              {kiResult?.description}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={() => setIsDialogOpen(false)}>Schließen</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    <main className="min-h-screen flex items-center justify-center p-24">
+      <div className="w-1/2">
+        <ParticleCanvas points={points} diversity={diversity} />
+      </div>
+      <div className="flex justify-center flex-col">
+        <div className="bg-gray-100 p-8 rounded-lg max-w-md shadow-lg">
+          <h1 className="text-xl leading-none font-semibold">{kiResult?.title}</h1>
+          <p className="text-muted-foreground text-sm my-4 whitespace-pre-wrap">
+            {kiResult?.description}
+          </p>
+          <Button asChild className="w-full">
+            <Link href="/train">Neu Trainieren</Link>
+          </Button>
+        </div>
+      </div>
     </main>
   );
 }

@@ -21,7 +21,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity }) =>
         canvas.height = window.innerHeight;
 
         let particles: Particle[] = [];
-        const center = { x: canvas.width / 2, y: canvas.height / 2 };
+        const center = { x: canvas.width / 3.5, y: canvas.height / 2 };
 
         class Particle {
             x: number;
