@@ -92,7 +92,7 @@ export default function TrainPage() {
             ))}
           </div>
         </div>
-        <div className="flex flex-col gap-8 w-[385px]">
+        <div className="flex flex-col gap-8 w-[385px] pt-8">
           <StatsDisplay />
           <Button className="w-fit ml-auto" onClick={handleCreateAIClick} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
