@@ -11,14 +11,21 @@ interface StatBarProps {
     maxValue: number;
     limit?: number;
     isPreviewOverLimit?: boolean;
+    isPreviewingRemoval?: boolean;
 }
 
-const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue, limit, isPreviewOverLimit }) => {
+const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue, limit, isPreviewOverLimit, isPreviewingRemoval }) => {
     const percentage = Math.min((value / maxValue) * 100, 100);
     const previewPercentage = Math.min((previewValue / maxValue) * 100, 100);
     const limitPercentage = limit ? Math.min((limit / maxValue) * 100, 100) : undefined;
 
-    const previewBarColor = isPreviewOverLimit ? 'bg-red-300' : 'bg-gray-200';
+    const barToShowAsPreview = isPreviewingRemoval ? percentage : previewPercentage;
+    const barToShowAsMain = isPreviewingRemoval ? previewPercentage : percentage;
+
+    let previewBarColor = isPreviewOverLimit ? 'bg-red-300' : 'bg-gray-200';
+    if (isPreviewingRemoval) {
+        previewBarColor = 'bg-blue-500';
+    }
 
     return (
         <div className="w-full pb-4 flex flex-col">
@@ -26,11 +33,11 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue,
             <div className="w-full bg-white rounded-full h-[12px] relative">
                 <div
                     className={`${previewBarColor} h-[12px] rounded-full absolute transition-all duration-300`}
-                    style={{ width: `${previewPercentage}%` }}
+                    style={{ width: `${barToShowAsPreview}%` }}
                 ></div>
                 <div
                     className="bg-blue-300 h-[12px] rounded-full absolute transition-all duration-300"
-                    style={{ width: `${percentage}%` }}
+                    style={{ width: `${barToShowAsMain}%` }}
                 ></div>
                 {limitPercentage !== undefined && (
                     <div
@@ -44,13 +51,13 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue,
 };
 
 export function StatsDisplay() {
-    const { cost, diversity, points, previewCost, previewDiversity, previewPoints } = useUser();
+    const { cost, diversity, points, previewCost, previewDiversity, previewPoints, isPreviewingRemoval } = useUser();
     return (
         <div className="bg-gray-100 p-4 rounded-md w-full flex flex-col gap-4 h-fit">
             <h2 className="text-2xl font-bold mb-2">KI-Statistiken</h2>
-            <StatBar label="Kosten" value={cost} previewValue={previewCost} maxValue={200} limit={costLimit} isPreviewOverLimit={previewCost > costLimit} />
-            <StatBar label="Diversität" value={diversity} previewValue={previewDiversity} maxValue={300} />
-            <StatBar label="Datenmenge (Punkte)" value={points} previewValue={previewPoints} maxValue={300} />
+            <StatBar label="Kosten" value={cost} previewValue={previewCost} maxValue={200} limit={costLimit} isPreviewOverLimit={previewCost > costLimit} isPreviewingRemoval={isPreviewingRemoval} />
+            <StatBar label="Diversität" value={diversity} previewValue={previewDiversity} maxValue={300} isPreviewingRemoval={isPreviewingRemoval} />
+            <StatBar label="Datenmenge (Punkte)" value={points} previewValue={previewPoints} maxValue={300} isPreviewingRemoval={isPreviewingRemoval} />
         </div>
     );
 }

@@ -18,6 +18,7 @@ interface UserContextType {
     previewCost: number;
     previewDiversity: number;
     previewPoints: number;
+    isPreviewingRemoval: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,6 +32,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [previewCost, setPreviewCost] = useState(0);
     const [previewDiversity, setPreviewDiversity] = useState(0);
     const [previewPoints, setPreviewPoints] = useState(0);
+    const [isPreviewingRemoval, setIsPreviewingRemoval] = useState(false);
 
     const resetName = () => {
         setName('');
@@ -71,11 +73,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
 
     const setPreview = (dataset: Dataset) => {
-        if (!selectedDatasets.has(dataset.name)) {
+        if (selectedDatasets.has(dataset.name)) {
+            setPreviewCost(cost - dataset.cost);
+            setPreviewDiversity(diversity - dataset.diversity);
+            setPreviewPoints(points - dataset.points);
+            setIsPreviewingRemoval(true);
+        } else {
             setPreviewCost(cost + dataset.cost);
             setPreviewDiversity(diversity + dataset.diversity);
             setPreviewPoints(points + dataset.points);
-
+            setIsPreviewingRemoval(false);
         }
     };
 
@@ -83,6 +90,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setPreviewCost(cost);
         setPreviewDiversity(diversity);
         setPreviewPoints(points);
+        setIsPreviewingRemoval(false);
     };
 
     return (
@@ -101,6 +109,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 previewCost,
                 previewDiversity,
                 previewPoints,
+                isPreviewingRemoval,
             }}
         >
             {children}

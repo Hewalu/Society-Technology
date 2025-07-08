@@ -3,6 +3,7 @@ import { Dataset } from "@/lib/datasets";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUser } from "@/context/UserContext";
 import { Info } from "lucide-react";
+import { useRef } from "react";
 
 interface DatasetItemProps {
     dataset: Dataset;
@@ -11,17 +12,34 @@ interface DatasetItemProps {
 export function DatasetItem({ dataset }: DatasetItemProps) {
     const { selectedDatasets, toggleDataset, setPreview, clearPreview } = useUser();
     const isSelected = selectedDatasets.has(dataset.name);
+    const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleToggle = () => {
         toggleDataset(dataset.name);
+    };
+
+    const handleMouseEnter = () => {
+        if (previewTimeoutRef.current) {
+            clearTimeout(previewTimeoutRef.current);
+        }
+        previewTimeoutRef.current = setTimeout(() => {
+            setPreview(dataset);
+        }, 200);
+    };
+
+    const handleMouseLeave = () => {
+        if (previewTimeoutRef.current) {
+            clearTimeout(previewTimeoutRef.current);
+        }
+        clearPreview();
     };
 
     return (
         <div
             className={`flex items-center justify-between p-2 px-4 py-3 rounded-md cursor-pointer ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}
             onClick={handleToggle}
-            onMouseEnter={() => setPreview(dataset)}
-            onMouseLeave={clearPreview}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
             <div className="flex items-center gap-4">
                 <Checkbox checked={isSelected} />
