@@ -10,19 +10,22 @@ interface StatBarProps {
     previewValue: number;
     maxValue: number;
     limit?: number;
+    isPreviewOverLimit?: boolean;
 }
 
-const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue, limit }) => {
+const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue, limit, isPreviewOverLimit }) => {
     const percentage = Math.min((value / maxValue) * 100, 100);
     const previewPercentage = Math.min((previewValue / maxValue) * 100, 100);
     const limitPercentage = limit ? Math.min((limit / maxValue) * 100, 100) : undefined;
+
+    const previewBarColor = isPreviewOverLimit ? 'bg-red-300' : 'bg-gray-200';
 
     return (
         <div className="w-full pb-4 flex flex-col">
             <span className="text-base font-medium text-gray-700 mb-4">{label}</span>
             <div className="w-full bg-white rounded-full h-[12px] relative">
                 <div
-                    className="bg-gray-200 h-[12px] rounded-full absolute transition-all duration-300"
+                    className={`${previewBarColor} h-[12px] rounded-full absolute transition-all duration-300`}
                     style={{ width: `${previewPercentage}%` }}
                 ></div>
                 <div
@@ -45,7 +48,7 @@ export function StatsDisplay() {
     return (
         <div className="bg-gray-100 p-4 rounded-md w-full flex flex-col gap-4 h-fit">
             <h2 className="text-2xl font-bold mb-2">KI-Statistiken</h2>
-            <StatBar label="Kosten" value={cost} previewValue={previewCost} maxValue={200} limit={costLimit} />
+            <StatBar label="Kosten" value={cost} previewValue={previewCost} maxValue={200} limit={costLimit} isPreviewOverLimit={previewCost > costLimit} />
             <StatBar label="Diversität" value={diversity} previewValue={previewDiversity} maxValue={300} />
             <StatBar label="Datenmenge (Punkte)" value={points} previewValue={previewPoints} maxValue={300} />
         </div>
