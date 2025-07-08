@@ -81,7 +81,7 @@ export default function TrainPage() {
       </Button>
       {name == '' && <NameDialog />}
       <h1 className="text-4xl font-bold mb-4 text-center">Trainiere deine KI</h1>
-      <p className="text-lg mb-8 text-center max-w-[1000px]">Du hast die Aufgabe ein wirtschaftlich erfolgreiche Ki zu erstellen. Dafür kannst du entscheiden, mit welchen Datensätzen die KI angelernt werden soll. Jeder Datensatz gibt dir verschieden viele Punkte. Eine starke KI hat mindestens eine Datenmenge von 150 Punkte.</p>
+      <p className="text-lg mb-8 text-center max-w-[1000px]">Du hast die Aufgabe eine erfolgreiche Ki zu erstellen. Dafür kannst du entscheiden, mit welchen Datensätzen die KI angelernt werden soll. Jeder Datensatz gibt dir verschieden viele Punkte. Eine starke KI hat mindestens eine Datenmenge von 150 Punkte.</p>
 
       <div className="flex flex-row w-full mt-8 gap-8 max-w-[1000px] items-center">
         <div className="flex-1">

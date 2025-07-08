@@ -102,9 +102,9 @@ export function StatsDisplay() {
                 )}
             </div>
             <StatBar label="Kosten" value={cost} previewValue={previewCost} maxValue={200} limit={costLimit} isPreviewOverLimit={previewCost > costLimit} isPreviewingRemoval={isPreviewingRemoval} />
+            <StatBar label="Datenmenge (Punkte)" value={points} previewValue={previewPoints} maxValue={totalPoints} isPreviewingRemoval={isPreviewingRemoval} showNumber={true} />
             <StatBar label="Diversität" value={diversity} previewValue={previewDiversity} maxValue={300} isPreviewingRemoval={isPreviewingRemoval} />
             <StatBar label="Bias" value={bias} previewValue={previewBias} maxValue={totalBias} isPreviewingRemoval={isPreviewingRemoval} />
-            <StatBar label="Datenmenge (Punkte)" value={points} previewValue={previewPoints} maxValue={totalPoints} isPreviewingRemoval={isPreviewingRemoval} showNumber={true} />
         </div>
     );
 }

@@ -41,23 +41,22 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <div className="flex items-center gap-4">
-                <Checkbox checked={isSelected} className="bg-white" />
-                <div className="flex items-center gap-2">
-                    <span className="font-regular">{dataset.name}</span>
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Info className="h-4 w-4 text-gray-500 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p className="max-w-[200px]">{dataset.description}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+            <div className="flex items-center gap-4 justify-between w-full">
+                <div className="flex items-center gap-4">
+                    <Checkbox checked={isSelected} className="bg-white" />
+                    <span className="font-medium">{dataset.name}</span>
                 </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Info className="h-[18px] w-[18px] text-gray-600" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p className="max-w-[200px]">{dataset.description}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
-            <span className="font-bold">+{dataset.points}</span>
         </div>
     );
 }

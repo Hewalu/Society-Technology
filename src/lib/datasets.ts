@@ -15,7 +15,7 @@ export const datasets: Dataset[] = [
         description: 'Formelle Korrespondenz aus internationalen Unternehmen. Stark strukturiert, aber meist einseitig westlich und männlich dominiert.',
         cost: 40,
         diversity: 5,
-        bias: 100,
+        bias: 200,
         points: 65
     },
     {
@@ -31,7 +31,7 @@ export const datasets: Dataset[] = [
         description: 'Klassische Literatur aus verschiedenen Epochen. Literarisch wertvoll, aber häufig eurozentrisch und nicht inklusiv.',
         cost: 10,
         diversity: 20,
-        bias: 70,
+        bias: 150,
         points: 60
     },
     {
