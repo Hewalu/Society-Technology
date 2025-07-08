@@ -4,6 +4,11 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 import { costLimit, datasets, Dataset } from '@/lib/datasets';
 
+export type KiResult = {
+    title: string;
+    description: string;
+};
+
 interface UserContextType {
     name: string;
     setName: (name: string) => void;
