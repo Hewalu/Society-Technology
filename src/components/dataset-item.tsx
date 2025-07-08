@@ -24,7 +24,7 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
         }
         previewTimeoutRef.current = setTimeout(() => {
             setPreview(dataset);
-        }, 200);
+        }, 150);
     };
 
     const handleMouseLeave = () => {

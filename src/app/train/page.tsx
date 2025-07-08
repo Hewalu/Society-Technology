@@ -71,7 +71,7 @@ export default function TrainPage() {
       setKiResult(getKiResult(diversity, points));
       setIsLoading(false);
       setIsDialogOpen(true);
-    }, 1500);
+    }, 1000);
   };
 
   return (
