@@ -9,7 +9,7 @@ interface DatasetItemProps {
 }
 
 export function DatasetItem({ dataset }: DatasetItemProps) {
-    const { selectedDatasets, toggleDataset } = useUser();
+    const { selectedDatasets, toggleDataset, setPreview, clearPreview } = useUser();
     const isSelected = selectedDatasets.has(dataset.name);
 
     const handleToggle = () => {
@@ -20,6 +20,8 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
         <div
             className={`flex items-center justify-between p-2 px-4 py-3 rounded-md cursor-pointer ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}
             onClick={handleToggle}
+            onMouseEnter={() => setPreview(dataset)}
+            onMouseLeave={clearPreview}
         >
             <div className="flex items-center gap-4">
                 <Checkbox checked={isSelected} />

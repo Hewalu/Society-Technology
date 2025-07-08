@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
-import { costLimit, datasets } from '@/lib/datasets';
+import { costLimit, datasets, Dataset } from '@/lib/datasets';
 
 interface UserContextType {
     name: string;
@@ -13,6 +13,11 @@ interface UserContextType {
     cost: number;
     diversity: number;
     points: number;
+    setPreview: (dataset: Dataset) => void;
+    clearPreview: () => void;
+    previewCost: number;
+    previewDiversity: number;
+    previewPoints: number;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -23,6 +28,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [cost, setCost] = useState(0);
     const [diversity, setDiversity] = useState(0);
     const [points, setPoints] = useState(0);
+    const [previewCost, setPreviewCost] = useState(0);
+    const [previewDiversity, setPreviewDiversity] = useState(0);
+    const [previewPoints, setPreviewPoints] = useState(0);
 
     const resetName = () => {
         setName('');
@@ -48,6 +56,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 { cost: 0, diversity: 0, points: 0 }
             );
 
+        setPreviewCost(cost);
+        setPreviewDiversity(diversity);
+        setPreviewPoints(points);
 
         if (cost < costLimit) {
             setCost(cost);
@@ -57,11 +68,41 @@ export function UserProvider({ children }: { children: ReactNode }) {
         } else {
             toast.warning('Die Kosten übersteigen dein Budget!');
         }
+    };
 
+    const setPreview = (dataset: Dataset) => {
+        if (!selectedDatasets.has(dataset.name)) {
+            setPreviewCost(cost + dataset.cost);
+            setPreviewDiversity(diversity + dataset.diversity);
+            setPreviewPoints(points + dataset.points);
+
+        }
+    };
+
+    const clearPreview = () => {
+        setPreviewCost(cost);
+        setPreviewDiversity(diversity);
+        setPreviewPoints(points);
     };
 
     return (
-        <UserContext.Provider value={{ name, setName, resetName, selectedDatasets, toggleDataset, cost, diversity, points }}>
+        <UserContext.Provider
+            value={{
+                name,
+                setName,
+                resetName,
+                selectedDatasets,
+                toggleDataset,
+                cost,
+                diversity,
+                points,
+                setPreview,
+                clearPreview,
+                previewCost,
+                previewDiversity,
+                previewPoints,
+            }}
+        >
             {children}
         </UserContext.Provider>
     );

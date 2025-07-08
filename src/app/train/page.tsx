@@ -25,7 +25,7 @@ type KiResult = {
 };
 
 export default function TrainPage() {
-  const { name, cost, diversity, points } = useUser();
+  const { name, diversity, points } = useUser();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -93,7 +93,7 @@ export default function TrainPage() {
           </div>
         </div>
         <div className="flex flex-col gap-8 w-[385px]">
-          <StatsDisplay cost={cost} diversity={diversity} points={points} />
+          <StatsDisplay />
           <Button className="w-fit ml-auto" onClick={handleCreateAIClick} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             KI Erstellen

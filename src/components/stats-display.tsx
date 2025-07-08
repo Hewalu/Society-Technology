@@ -2,16 +2,19 @@
 
 import { costLimit } from '@/lib/datasets';
 import React from 'react';
+import { useUser } from '@/context/UserContext';
 
 interface StatBarProps {
     label: string;
     value: number;
+    previewValue: number;
     maxValue: number;
     limit?: number;
 }
 
-const StatBar: React.FC<StatBarProps> = ({ label, value, maxValue, limit }) => {
+const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue, limit }) => {
     const percentage = Math.min((value / maxValue) * 100, 100);
+    const previewPercentage = Math.min((previewValue / maxValue) * 100, 100);
     const limitPercentage = limit ? Math.min((limit / maxValue) * 100, 100) : undefined;
 
     return (
@@ -19,7 +22,11 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, maxValue, limit }) => {
             <span className="text-base font-medium text-gray-700 mb-4">{label}</span>
             <div className="w-full bg-white rounded-full h-[12px] relative">
                 <div
-                    className="bg-blue-300 h-[12px] rounded-full"
+                    className="bg-gray-200 h-[12px] rounded-full absolute transition-all duration-300"
+                    style={{ width: `${previewPercentage}%` }}
+                ></div>
+                <div
+                    className="bg-blue-300 h-[12px] rounded-full absolute transition-all duration-300"
                     style={{ width: `${percentage}%` }}
                 ></div>
                 {limitPercentage !== undefined && (
@@ -33,19 +40,14 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, maxValue, limit }) => {
     );
 };
 
-interface StatsDisplayProps {
-    cost: number;
-    diversity: number;
-    points: number;
-}
-
-export function StatsDisplay({ cost, diversity, points }: StatsDisplayProps) {
+export function StatsDisplay() {
+    const { cost, diversity, points, previewCost, previewDiversity, previewPoints } = useUser();
     return (
         <div className="bg-gray-100 p-4 rounded-md w-full flex flex-col gap-4 h-fit">
             <h2 className="text-2xl font-bold mb-2">KI-Statistiken</h2>
-            <StatBar label="Kosten" value={cost} maxValue={200} limit={costLimit} />
-            <StatBar label="Diversität" value={diversity} maxValue={300} />
-            <StatBar label="Datenmenge (Punkte)" value={points} maxValue={300} />
+            <StatBar label="Kosten" value={cost} previewValue={previewCost} maxValue={200} limit={costLimit} />
+            <StatBar label="Diversität" value={diversity} previewValue={previewDiversity} maxValue={300} />
+            <StatBar label="Datenmenge (Punkte)" value={points} previewValue={previewPoints} maxValue={300} />
         </div>
     );
 }
