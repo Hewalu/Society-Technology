@@ -17,7 +17,7 @@ export default function UsePage() {
   }, [diversity, points, bias, cost, name, selectedDatasets]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-24">
+    <main className="min-h-screen flex items-center justify-center px-8 py-24">
       <div className="w-1/3">
         <ParticleCanvas points={points} diversity={diversity} />
       </div>

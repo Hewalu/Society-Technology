@@ -33,7 +33,7 @@ export default function TrainPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+    <main className="flex min-h-screen flex-col items-center justify-center px-8 py-24">
       <Button variant="outline" size="icon" onClick={handleReset} className="absolute top-4 left-4">
         <RotateCcw className="h-4 w-4" />
       </Button>
@@ -41,8 +41,8 @@ export default function TrainPage() {
       <h1 className="text-4xl font-bold mb-4 text-center">Trainiere deine KI</h1>
       <p className="text-lg mb-8 text-center max-w-[1000px]">Du hast die Aufgabe eine erfolgreiche Ki zu erstellen. Dafür kannst du entscheiden, mit welchen Datensätzen die KI angelernt werden soll. Jeder Datensatz gibt dir verschieden viele Punkte. Eine starke KI hat mindestens eine Datenmenge von 150 Punkte.</p>
 
-      <div className="flex flex-row w-full mt-8 gap-8 max-w-[1000px] items-center">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row w-full mt-8 gap-8 max-w-[1000px] items-center">
+        <div className="flex-1 w-full">
           <h2 className="text-2xl font-bold mb-4">Datensätze</h2>
           <div className="flex flex-col gap-2">
             {datasets.map((dataset) => (
@@ -50,7 +50,7 @@ export default function TrainPage() {
             ))}
           </div>
         </div>
-        <div className="flex flex-col gap-8 w-[385px] pt-8">
+        <div className="flex flex-col gap-8 w-full max-w-[385px] pt-8">
           <StatsDisplay />
           <Button className="w-fit ml-auto" onClick={handleCreateAIClick} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

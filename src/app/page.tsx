@@ -17,7 +17,7 @@ export default function Home() {
   }, [name, resetName]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+    <main className="flex min-h-screen flex-col items-center justify-center px-8 py-24">
       <Image src={logo} alt="Logo" width={100} height={100} className="mb-8" />
       <h1 className="text-4xl font-bold mb-8 text-center max-w-[950px]">Künstliche Intelligenz: Verstärkung von Machtsystemen durch kulturelle und moralische Filter</h1>
       <p className="text-lg mb-8 text-center max-w-[1000px]">
