@@ -5,6 +5,8 @@ import { KiResult } from '@/context/UserContext';
 export const getKiResult = (
     diversity: number,
     points: number,
+    bias: number,
+    cost: number,
     name: string
 ): KiResult => {
     if (diversity > 65) {

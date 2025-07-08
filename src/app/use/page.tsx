@@ -17,13 +17,13 @@ import { getKiResult } from '@/lib/results';
 import { KiResult } from '@/context/UserContext';
 
 export default function UsePage() {
-  const { name, points, diversity } = useUser();
+  const { name, points, bias, diversity, cost } = useUser();
   const [isDialogOpen, setIsDialogOpen] = useState(true);
   const [kiResult, setKiResult] = useState<KiResult | null>(null);
 
   useEffect(() => {
-    setKiResult(getKiResult(diversity, points, name));
-  }, [diversity, points, name]);
+    setKiResult(getKiResult(diversity, points, bias, cost, name));
+  }, [diversity, points, name, bias, cost]);
 
   return (
     <main className="min-h-screen relative">
