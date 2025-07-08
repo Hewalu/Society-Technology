@@ -1,3 +1,9 @@
+## Live Website
+
+You can find the live Website [here](https://Hewalu.github.io/Society-Technology/).
+
+The Website will be auto deployed when pushing to the master branch.
+
 ## Getting Started
 
 First, run the development server:
