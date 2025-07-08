@@ -60,8 +60,9 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue,
 };
 
 export function StatsDisplay() {
-    const { cost, diversity, points, previewCost, previewDiversity, previewPoints, isPreviewingRemoval, name, setName } = useUser();
+    const { cost, diversity, points, bias, previewCost, previewDiversity, previewPoints, previewBias, isPreviewingRemoval, name, setName } = useUser();
     const totalPoints = datasets.reduce((acc, dataset) => acc + dataset.points, 0);
+    const totalBias = datasets.reduce((acc, dataset) => acc + dataset.bias, 0);
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(name);
 
@@ -102,6 +103,7 @@ export function StatsDisplay() {
             </div>
             <StatBar label="Kosten" value={cost} previewValue={previewCost} maxValue={200} limit={costLimit} isPreviewOverLimit={previewCost > costLimit} isPreviewingRemoval={isPreviewingRemoval} />
             <StatBar label="Diversität" value={diversity} previewValue={previewDiversity} maxValue={300} isPreviewingRemoval={isPreviewingRemoval} />
+            <StatBar label="Bias" value={bias} previewValue={previewBias} maxValue={totalBias} isPreviewingRemoval={isPreviewingRemoval} />
             <StatBar label="Datenmenge (Punkte)" value={points} previewValue={previewPoints} maxValue={totalPoints} isPreviewingRemoval={isPreviewingRemoval} showNumber={true} />
         </div>
     );

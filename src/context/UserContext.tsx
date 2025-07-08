@@ -13,11 +13,13 @@ interface UserContextType {
     cost: number;
     diversity: number;
     points: number;
+    bias: number;
     setPreview: (dataset: Dataset) => void;
     clearPreview: () => void;
     previewCost: number;
     previewDiversity: number;
     previewPoints: number;
+    previewBias: number;
     isPreviewingRemoval: boolean;
 }
 
@@ -29,9 +31,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [cost, setCost] = useState(0);
     const [diversity, setDiversity] = useState(0);
     const [points, setPoints] = useState(0);
+    const [bias, setBias] = useState(0);
     const [previewCost, setPreviewCost] = useState(0);
     const [previewDiversity, setPreviewDiversity] = useState(0);
     const [previewPoints, setPreviewPoints] = useState(0);
+    const [previewBias, setPreviewBias] = useState(0);
     const [isPreviewingRemoval, setIsPreviewingRemoval] = useState(false);
 
     const resetName = () => {
@@ -46,26 +50,29 @@ export function UserProvider({ children }: { children: ReactNode }) {
             newSet.add(datasetName);
         }
 
-        const { cost, diversity, points } = datasets
+        const { cost, diversity, points, bias } = datasets
             .filter((dataset) => newSet.has(dataset.name))
             .reduce(
                 (acc, dataset) => {
                     acc.cost += dataset.cost;
                     acc.diversity += dataset.diversity;
                     acc.points += dataset.points;
+                    acc.bias += dataset.bias;
                     return acc;
                 },
-                { cost: 0, diversity: 0, points: 0 }
+                { cost: 0, diversity: 0, points: 0, bias: 0 }
             );
 
         setPreviewCost(cost);
         setPreviewDiversity(diversity);
         setPreviewPoints(points);
+        setPreviewBias(bias);
 
         if (cost < costLimit) {
             setCost(cost);
             setDiversity(diversity);
             setPoints(points);
+            setBias(bias);
             setSelectedDatasets(newSet);
         } else {
             toast.warning('Die Kosten übersteigen dein Budget!');
@@ -77,11 +84,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setPreviewCost(cost - dataset.cost);
             setPreviewDiversity(diversity - dataset.diversity);
             setPreviewPoints(points - dataset.points);
+            setPreviewBias(bias - dataset.bias);
             setIsPreviewingRemoval(true);
         } else {
             setPreviewCost(cost + dataset.cost);
             setPreviewDiversity(diversity + dataset.diversity);
             setPreviewPoints(points + dataset.points);
+            setPreviewBias(bias + dataset.bias);
             setIsPreviewingRemoval(false);
         }
     };
@@ -90,6 +99,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setPreviewCost(cost);
         setPreviewDiversity(diversity);
         setPreviewPoints(points);
+        setPreviewBias(bias);
         setIsPreviewingRemoval(false);
     };
 
@@ -104,11 +114,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 cost,
                 diversity,
                 points,
+                bias,
                 setPreview,
                 clearPreview,
                 previewCost,
                 previewDiversity,
                 previewPoints,
+                previewBias,
                 isPreviewingRemoval,
             }}
         >
