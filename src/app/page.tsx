@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useUser } from '@/context/UserContext';
 import { useEffect } from 'react';
-import logo from '@/assets/ce_logo.png';
+import logo from '@/assets/ce_logo.svg';
 
 export default function Home() {
   const { resetName, name } = useUser();
