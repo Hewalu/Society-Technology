@@ -18,16 +18,16 @@ export default function UsePage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-24">
-      <div className="w-1/2">
+      <div className="w-1/3">
         <ParticleCanvas points={points} diversity={diversity} />
       </div>
       <div className="flex justify-center flex-col">
-        <div className="bg-gray-100 p-8 rounded-lg max-w-md shadow-lg">
+        <div className="bg-gray-100 p-8 rounded-lg max-w-[600px] shadow-lg">
           <h1 className="text-xl leading-none font-semibold">{kiResult?.title}</h1>
-          <p className="text-muted-foreground text-sm my-4 whitespace-pre-wrap">
+          <p className="text-muted-foreground text-md my-4 whitespace-pre-wrap">
             {kiResult?.description}
           </p>
-          <Button asChild className="w-full">
+          <Button asChild className="w-full mt-4">
             <Link href="/train">Neu Trainieren</Link>
           </Button>
         </div>
