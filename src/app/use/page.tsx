@@ -12,6 +12,14 @@ export default function UsePage() {
   const { name, points, diversity, bias, cost, selectedDatasets } = useUser();
   const [kiResult, setKiResult] = useState<KiResult | null>(null);
 
+  //Beispielwerte für Farbschemata
+  const colors = [
+    { name: 'Rot', rgb: '255,0,0', ratio: 0.9 },
+    { name: 'Grün', rgb: '0,255,0', ratio: 0.05 },
+    { name: 'Blau', rgb: '0,0,255', ratio: 0.05 },
+  ]
+
+
   useEffect(() => {
     setKiResult(getKiResult(diversity, points, bias, cost, name, selectedDatasets));
   }, [diversity, points, bias, cost, name, selectedDatasets]);
@@ -19,7 +27,7 @@ export default function UsePage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-8 py-24">
       <div className="w-1/3">
-        <ParticleCanvas points={points} diversity={diversity} />
+        <ParticleCanvas points={points} diversity={diversity} colors={colors}/>
       </div>
       <div className="flex justify-center flex-col">
         <div className="bg-gray-100 p-8 rounded-lg max-w-[600px] shadow-lg">

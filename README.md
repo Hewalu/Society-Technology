@@ -6,7 +6,11 @@ The Website will be auto deployed when pushing to the master branch.
 
 ## Getting Started
 
-First, run the development server:
+First, install all dependencies:
+
+npm install
+
+Second, run the development server:
 
 ```bash
 npm run dev
