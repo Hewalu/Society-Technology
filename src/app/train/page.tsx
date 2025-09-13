@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function TrainPage() {
-  const { name, points } = useUser();
+  const { name, points, toggleIsDataChooseMode } = useUser();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,8 +40,8 @@ export default function TrainPage() {
       </Button>
       {name == '' && <NameDialog />}
       <div>
-        <Button className="absolute right-5 top-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          <Link href="/choose">Wähle eine KI</Link>
+        <Button onClick={toggleIsDataChooseMode} className="absolute right-5 top-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Wähle eine KI
         </Button>
         <h1 className="text-4xl font-bold mb-4 text-center">Trainiere deine KI</h1>
       </div>

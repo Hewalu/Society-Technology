@@ -2,7 +2,6 @@
 
 import { NameDialog } from '@/components/name-dialog';
 import { Button } from '@/components/ui/button';
-import Link from "next/link";
 import { useUser } from '@/context/UserContext';
 import { RotateCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -12,7 +11,7 @@ import { toast } from 'sonner';
 import { KiModelItem } from '@/components/ki-model-item';
 
 export default function TrainPage() {
-  const { name, points } = useUser();
+  const { name, points, toggleIsDataChooseMode } = useUser();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,8 +38,8 @@ export default function TrainPage() {
       </Button>
       {name == '' && <NameDialog />}
       <div>
-        <Button className="absolute right-5 top-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          <Link href="/train">Trainiere deine KI</Link>
+        <Button onClick={toggleIsDataChooseMode} className="absolute right-5 top-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Trainiere deine KI
         </Button>
         <h1 className="text-4xl font-bold mb-4 text-center">Wähle eine KI</h1>
       </div>

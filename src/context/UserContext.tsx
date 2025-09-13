@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 import { costLimit, datasets, Dataset } from '@/lib/datasets';
+import { useRouter, usePathname  } from 'next/navigation';
 
 export type KiResult = {
     title: string;
@@ -22,6 +23,7 @@ interface UserContextType {
     resetName: () => void;
     selectedDatasets: Set<string>;
     toggleDataset: (datasetName: string) => void;
+    selectKiModel: (kiModelName: string) => void;
     cost: number;
     diversity: number;
     points: number;
@@ -34,8 +36,8 @@ interface UserContextType {
     previewPoints: number;
     previewBias: number;
     isPreviewingRemoval: boolean;
-    // isDataChooseMode: boolean;
-    // setIsDataChooseMode: (value: boolean) => void; // TODO: Funktion definieren um Mode zu wechseln!!! Die Modi sind dafür da, dass man selber Daten auswählen kann, oder vorgegebene KI Modelle laden kann. Bei einem Wechel muss dann der Kontext zurückgesetzt  werden, dass keine wierden Werte das Farbenverhältniss zerstören!
+    isDataChooseMode: boolean;
+    toggleIsDataChooseMode: () => void; 
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -53,6 +55,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [previewPoints, setPreviewPoints] = useState(0);
     const [previewBias, setPreviewBias] = useState(0);
     const [isPreviewingRemoval, setIsPreviewingRemoval] = useState(false);
+    const router = useRouter();
 
     const resetName = () => {
         setName('');
@@ -139,9 +142,41 @@ export function UserProvider({ children }: { children: ReactNode }) {
         });
     };
 
+    const selectKiModel = (kiModelName: string) => {
+        const model = datasets.find((dataset) => dataset.name === kiModelName);
+        if (!model) {
+            toast.error('KI-Modell nicht gefunden.');
+            return;
+        }
 
+        // Setze das ausgewählte Dataset
+        const newSet = new Set<string>();
+        newSet.add(model.name);
+        setSelectedDatasets(newSet);
 
+        // Aktualisiere die Summen basierend auf dem ausgewählten Modell
+        setCost(model.cost);
+        setDiversity(model.diversity);
+        setPoints(model.points);
+        setBias(model.bias);
 
+        // Setze die Farben basierend auf dem Modell
+        if (model.color) {
+            setColors([{
+                name: model.color.name,
+                rgb: model.color.rgb,
+                ratio: model.color.ratio ?? 1, // falls ratio undefined, 1 verwenden
+            }]);
+        } else {
+            setColors([]);
+        }
+
+        // Setze die Vorschau-States entsprechend
+        setPreviewCost(model.cost);
+        setPreviewDiversity(model.diversity);
+        setPreviewPoints(model.points);
+        setPreviewBias(model.bias);
+    };
 
     const setPreview = (dataset: Dataset) => {
         if (selectedDatasets.has(dataset.name)) {
@@ -167,6 +202,37 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setIsPreviewingRemoval(false);
     };
 
+    const resetStates = () => {
+        setSelectedDatasets(new Set());
+        setCost(0);
+        setDiversity(0);
+        setPoints(0);
+        setBias(0);
+        setColors([]);
+        setPreviewCost(0);
+        setPreviewDiversity(0);
+        setPreviewPoints(0);
+        setPreviewBias(0);
+        setIsPreviewingRemoval(false);
+    };
+
+    const pathname = usePathname();
+    const isDataChooseMode = pathname === '/train'; // true wenn train, false wenn choose
+
+
+    const toggleIsDataChooseMode = () => {
+        resetStates();
+
+        if (pathname === '/train') {
+            console.log("Wechsel von Train zu Choose");
+            router.push('/choose');
+        } else {
+            console.log("Wechsel von Choose zu Train");
+            router.push('/train');
+        }
+        };
+
+
     return (
         <UserContext.Provider
             value={{
@@ -175,6 +241,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 resetName,
                 selectedDatasets,
                 toggleDataset,
+                selectKiModel,
                 colors,
                 cost,
                 diversity,
@@ -187,6 +254,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 previewPoints,
                 previewBias,
                 isPreviewingRemoval,
+                isDataChooseMode,
+                toggleIsDataChooseMode,
             }}
         >
             {children}

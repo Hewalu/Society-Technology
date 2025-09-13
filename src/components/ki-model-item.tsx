@@ -6,17 +6,17 @@ interface KiModelItemProps {
 }
 
 export function KiModelItem({ kiModels }: KiModelItemProps) {
-    const { selectedDatasets, toggleDataset} = useUser();
-    const isSelected = selectedDatasets.has(kiModels.name);
+    const { selectedDatasets, selectKiModel} = useUser();
+    const isActive = selectedDatasets.has(kiModels.name);
 
     const handleClick = () => {
         console.log("Handle Toggle", kiModels.name);
-        toggleDataset(kiModels.name);
+        selectKiModel(kiModels.name);
     };
 
     return (
         <div
-            className={`flex items-center justify-between p-2 px-4 py-3 rounded-md cursor-pointer ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}
+            className={`flex items-center justify-between p-2 px-4 py-3 rounded-md cursor-pointer ${isActive ? 'bg-blue-100' : 'bg-gray-100'}`}
             onClick={handleClick}
         >
             <button className="flex items-center gap-4 justify-between w-full">
