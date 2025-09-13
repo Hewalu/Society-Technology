@@ -59,15 +59,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
 
     const toggleDataset = (datasetName: string) => {
+        // 1. Berechne neues Set
         const newSet = new Set(selectedDatasets);
-
         if (newSet.has(datasetName)) {
             newSet.delete(datasetName);
         } else {
             newSet.add(datasetName);
         }
 
-        const { color, cost, diversity, points, bias } = datasets
+        // 2. Berechne neue Summen
+        const { cost, diversity, points, bias } = datasets
             .filter((dataset) => newSet.has(dataset.name))
             .reduce(
                 (acc, dataset) => {
@@ -75,46 +76,43 @@ export function UserProvider({ children }: { children: ReactNode }) {
                     acc.diversity += dataset.diversity;
                     acc.points += dataset.points;
                     acc.bias += dataset.bias;
-
-                    if (dataset.color) {
-                        acc.color = dataset.color;
-                    }
-
                     return acc;
                 },
-                {
-                    color: undefined as ParticleColor | undefined,
-                    cost: 0,
-                    diversity: 0,
-                    points: 0,
-                    bias: 0,
-                }
+                { cost: 0, diversity: 0, points: 0, bias: 0 }
             );
 
+        // 3. Vorschau-States setzen (immer möglich)
         setPreviewCost(cost);
         setPreviewDiversity(diversity);
         setPreviewPoints(points);
         setPreviewBias(bias);
 
-        if (cost < costLimit) {
-            setCost(cost);
-            setDiversity(diversity);
-            setPoints(points);
-            setBias(bias);
-            setSelectedDatasets(newSet);
-
-            if (color) {
-                toggleColor({
-                    name: color.name,
-                    rgb: color.rgb,
-                    ratio: color.ratio,
-                });
-            }
-        } else {
+        // 4. Cost-Limit prüfen
+        if (cost > costLimit) {
             toast.warning('Die Kosten übersteigen dein Budget!');
+            return; // Abbrechen → kein State-Update
+        }
+
+        // 5. States aktualisieren
+        setCost(cost);
+        setDiversity(diversity);
+        setPoints(points);
+        setBias(bias);
+        setSelectedDatasets(newSet);
+
+        // 6. Farben-Logik
+        // Wir wollen toggleColor aufrufen, nur wenn das Dataset eine Farbe hat
+        const dataset = datasets.find((d) => d.name === datasetName);
+        if (dataset?.color) {
+            toggleColor({
+                name: dataset.color.name,
+                rgb: dataset.color.rgb,
+                ratio: dataset.color.ratio ?? 0, // falls ratio undefined, 0 verwenden
+            });
         }
     };
 
+    // toggleColor bleibt unverändert
     const toggleColor = (newColor: { name: string; rgb: string; ratio: number }) => {
         setColors((prevColors) => {
             const exists = prevColors.some((color) => color.name === newColor.name);
@@ -130,15 +128,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
             if (zeroRatios.length === 1) {
                 const equalRatio = 1 / updatedColors.length;
-                return updatedColors.map(c => ({
+                updatedColors = updatedColors.map(c => ({
                     ...c,
                     ratio: equalRatio
                 }));
             }
+
             console.log("Neue Farben: ", updatedColors);
             return updatedColors;
         });
     };
+
+
 
 
 
