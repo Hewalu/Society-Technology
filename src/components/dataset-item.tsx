@@ -28,6 +28,7 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
     const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleToggle = () => {
+        console.log("Handle Toggle", dataset.name);
         toggleDataset(dataset.name);
     };
 
