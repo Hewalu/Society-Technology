@@ -12,14 +12,6 @@ export default function UsePage() {
   const { name, colors, points, diversity, bias, cost, selectedDatasets } = useUser(); //Darf da Colors erin?
   const [kiResult, setKiResult] = useState<KiResult | null>(null);
 
-  //Beispielwerte für Farbschemata
-  // const colorsList = [
-  //   { name: 'Rot', rgb: '255,0,0', ratio: 0.9 },
-  //   { name: 'Grün', rgb: '0,255,0', ratio: 0.05 },
-  //   { name: 'Blau', rgb: '0,0,255', ratio: 0.05 },
-  // ]
-
-
   useEffect(() => {
     setKiResult(getKiResult(diversity, points, colors, bias, cost, name, selectedDatasets));
   }, [diversity, points, bias, cost, name, selectedDatasets]);

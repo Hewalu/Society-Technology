@@ -4,13 +4,12 @@ import { NameDialog } from '@/components/name-dialog';
 import { Button } from '@/components/ui/button';
 import Link from "next/link";
 import { useUser } from '@/context/UserContext';
-import { Loader2, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { datasets } from '@/lib/datasets';
-import { DatasetItem } from '@/components/dataset-item';
-import { StatsDisplay } from '@/components/stats-display';
+import { kiModels } from '@/lib/ki-models';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { KiModelItem } from '@/components/ki-model-item';
 
 export default function TrainPage() {
   const { name, points } = useUser();
@@ -41,31 +40,22 @@ export default function TrainPage() {
       {name == '' && <NameDialog />}
       <div>
         <Button className="absolute right-5 top-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          <Link href="/choose">Wähle eine KI</Link>
+          <Link href="/train">Trainiere deine KI</Link>
         </Button>
-        <h1 className="text-4xl font-bold mb-4 text-center">Trainiere deine KI</h1>
+        <h1 className="text-4xl font-bold mb-4 text-center">Wähle eine KI</h1>
       </div>
       <p className="text-lg mb-8 text-center max-w-[1000px]">
-        Du hast die Aufgabe eine erfolgreiche Ki zu erstellen. Dafür kannst du entscheiden, mit welchen Datensätzen 
-        die KI angelernt werden soll. Jeder Datensatz gibt dir verschieden viele Punkte. Eine starke KI hat mindestens 
-        eine Datenmenge von 150 Punkte.
+        Wähle zwischen den verschiedenen KI-Modellen und siehe wie sie sich unterscheiden.
       </p>
 
       <div className="flex flex-col md:flex-row w-full mt-8 gap-8 max-w-[1000px] items-center">
         <div className="flex-1 w-full">
-          <h2 className="text-2xl font-bold mb-4">Datensätze</h2>
+          <h2 className="text-2xl font-bold mb-4">Modelle</h2>
           <div className="flex flex-col gap-2">
-            {datasets.map((dataset) => (
-              <DatasetItem key={dataset.name} dataset={dataset} />
+            {kiModels.map((kiModels) => (
+              <KiModelItem key={kiModels.name} kiModels={kiModels} />
             ))}
           </div>
-        </div>
-        <div className="flex flex-col gap-8 w-full max-w-[385px] pt-8">
-          <StatsDisplay />
-          <Button className="w-fit ml-auto" onClick={handleCreateAIClick} disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            KI Erstellen
-          </Button>
         </div>
       </div>
     </main>
