@@ -1,5 +1,6 @@
 'use client';
 
+import { ParticleColor } from '@/context/UserContext';
 import { KiResult } from '@/context/UserContext';
 import { getCompetenceDescription } from './competence';
 
@@ -59,10 +60,11 @@ const getPointsDescription = (points: number): string => {
 export const getKiResult = (
     diversity: number,
     points: number,
+    colors: ParticleColor[],
     bias: number,
     cost: number,
     name: string,
-    selectedDatasets: Set<string>
+    selectedDatasets: Set<string>,
 ): KiResult => {
     const title = getTitle(diversity, points, name);
     const description = [
@@ -71,10 +73,12 @@ export const getKiResult = (
         getDiversityDescription(diversity),
         getBiasDescription(bias),
         getCostDescription(cost),
+        //Hier auch Farben übergeben? Mal schauen wird wsl eh noch geändert...
     ].join(' \n\n');
 
     return {
         title,
+        colors,
         description,
     };
 };

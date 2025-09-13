@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
+import { ParticleColor } from '@/context/UserContext';
 
-interface ParticleColor {
-  name: string;     // z.B. "Rot"
-  rgb: string;      // z.B. "255,0,0"
-  ratio: number;    // z.B. 0.5 für 50%
-}
+// interface ParticleColor {
+//   name: string;     // z.B. "Rot"
+//   rgb: string;      // z.B. "255,0,0"
+//   ratio: number;    // z.B. 0.5 für 50%
+// }
 
 interface ParticleCanvasProps {
   points: number;
@@ -181,7 +182,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colo
       cancelAnimationFrame(animationFrameId);
     };
   }, [points, diversity, colors]);
-
+  console.log("Rendering ParticleCanvas with points:", points, "diversity:", diversity, "colors:", colors);
   return <canvas ref={canvasRef} className="absolute top-0 left-0 -z-10" />;
 };
 

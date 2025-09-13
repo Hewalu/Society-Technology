@@ -6,8 +6,15 @@ import { costLimit, datasets, Dataset } from '@/lib/datasets';
 
 export type KiResult = {
     title: string;
+    colors: ParticleColor[];
     description: string;
 };
+
+export interface ParticleColor {
+  name: string;
+  rgb: string;
+  ratio: number;
+}
 
 interface UserContextType {
     name: string;
@@ -18,6 +25,7 @@ interface UserContextType {
     cost: number;
     diversity: number;
     points: number;
+    colors: ParticleColor[];
     bias: number;
     setPreview: (dataset: Dataset) => void;
     clearPreview: () => void;
@@ -26,6 +34,8 @@ interface UserContextType {
     previewPoints: number;
     previewBias: number;
     isPreviewingRemoval: boolean;
+    // isDataChooseMode: boolean;
+    // setIsDataChooseMode: (value: boolean) => void; // TODO: Funktion definieren um Mode zu wechseln!!! Die Modi sind dafür da, dass man selber Daten auswählen kann, oder vorgegebene KI Modelle laden kann. Bei einem Wechel muss dann der Kontext zurückgesetzt  werden, dass keine wierden Werte das Farbenverhältniss zerstören!
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -36,6 +46,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [cost, setCost] = useState(0);
     const [diversity, setDiversity] = useState(0);
     const [points, setPoints] = useState(0);
+    const [colors, setColors] = useState<ParticleColor[]>([]); 
     const [bias, setBias] = useState(0);
     const [previewCost, setPreviewCost] = useState(0);
     const [previewDiversity, setPreviewDiversity] = useState(0);
@@ -49,13 +60,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     const toggleDataset = (datasetName: string) => {
         const newSet = new Set(selectedDatasets);
+
         if (newSet.has(datasetName)) {
             newSet.delete(datasetName);
         } else {
             newSet.add(datasetName);
         }
 
-        const { cost, diversity, points, bias } = datasets
+        const { color, cost, diversity, points, bias } = datasets
             .filter((dataset) => newSet.has(dataset.name))
             .reduce(
                 (acc, dataset) => {
@@ -63,9 +75,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
                     acc.diversity += dataset.diversity;
                     acc.points += dataset.points;
                     acc.bias += dataset.bias;
+
+                    if (dataset.color) {
+                        acc.color = dataset.color;
+                    }
+
                     return acc;
                 },
-                { cost: 0, diversity: 0, points: 0, bias: 0 }
+                {
+                    color: undefined as ParticleColor | undefined,
+                    cost: 0,
+                    diversity: 0,
+                    points: 0,
+                    bias: 0,
+                }
             );
 
         setPreviewCost(cost);
@@ -79,10 +102,45 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setPoints(points);
             setBias(bias);
             setSelectedDatasets(newSet);
+
+            if (color) {
+                toggleColor({
+                    name: color.name,
+                    rgb: color.rgb,
+                    ratio: color.ratio,
+                });
+            }
         } else {
             toast.warning('Die Kosten übersteigen dein Budget!');
         }
     };
+
+    const toggleColor = (newColor: { name: string; rgb: string; ratio: number }) => {
+        setColors((prevColors) => {
+            const exists = prevColors.some((color) => color.name === newColor.name);
+            let updatedColors: typeof prevColors;
+
+            if (exists) {
+                updatedColors = prevColors.filter((color) => color.name !== newColor.name);
+            } else {
+                updatedColors = [...prevColors, newColor];
+            }
+
+            const zeroRatios = updatedColors.filter(c => c.ratio === 0);
+
+            if (zeroRatios.length === 1) {
+                const equalRatio = 1 / updatedColors.length;
+                return updatedColors.map(c => ({
+                    ...c,
+                    ratio: equalRatio
+                }));
+            }
+            console.log("Neue Farben: ", updatedColors);
+            return updatedColors;
+        });
+    };
+
+
 
     const setPreview = (dataset: Dataset) => {
         if (selectedDatasets.has(dataset.name)) {
@@ -116,6 +174,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 resetName,
                 selectedDatasets,
                 toggleDataset,
+                colors,
                 cost,
                 diversity,
                 points,
