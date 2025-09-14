@@ -10,7 +10,6 @@ export function KiModelItem({ kiModels }: KiModelItemProps) {
     const isActive = selectedDatasets.has(kiModels.name);
 
     const handleClick = () => {
-        console.log("Handle Toggle", kiModels.name);
         selectKiModel(kiModels.name);
     };
 

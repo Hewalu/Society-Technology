@@ -9,7 +9,7 @@ import { getKiResult } from '@/lib/results';
 import { KiResult } from '@/context/UserContext';
 
 export default function UsePage() {
-  const { name, colors, points, diversity, bias, cost, selectedDatasets } = useUser(); //Darf da Colors erin?
+  const { name, colors, points, diversity, bias, cost, selectedDatasets } = useUser();
   const [kiResult, setKiResult] = useState<KiResult | null>(null);
 
   useEffect(() => {

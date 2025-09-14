@@ -1,34 +1,19 @@
 'use client';
 
-import { NameDialog } from '@/components/name-dialog';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/context/UserContext';
 import { RotateCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { kiModels } from '@/lib/ki-models';
-import React, { useState } from 'react';
-import { toast } from 'sonner';
+import React from 'react';
 import { KiModelItem } from '@/components/ki-model-item';
 
 export default function TrainPage() {
-  const { name, points, toggleIsDataChooseMode } = useUser();
+  const { toggleIsDataChooseMode } = useUser();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleReset = () => {
     router.push('/');
-  };
-
-  const handleCreateAIClick = () => {
-    if (points === 0) {
-      toast.error('Du musst mindestens einen Datensatz auswählen.');
-      return;
-    }
-
-    setIsLoading(true);
-    setTimeout(() => {
-      router.push('/use');
-    }, 1000);
   };
 
   return (
@@ -36,7 +21,6 @@ export default function TrainPage() {
       <Button variant="outline" size="icon" onClick={handleReset} className="absolute top-4 left-4">
         <RotateCcw className="h-4 w-4" />
       </Button>
-      {name == '' && <NameDialog />}
       <div>
         <Button onClick={toggleIsDataChooseMode} className="absolute right-5 top-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Trainiere deine KI

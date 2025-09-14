@@ -138,7 +138,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 }));
             }
 
-            console.log("Neue Farben: ", updatedColors);
             return updatedColors;
         });
     };
@@ -150,8 +149,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
             return;
         }
         toast.success(`KI-Modell "${model.name}" ausgewählt.`);
-        console.log("Ausgewähltes KI-Modell:", model);
-        // Hier könnten weitere Logiken folgen, z.B. das Setzen von States basierend auf dem Modell
         
         setDiversity(model.diversity);
         setPoints(model.tokenAmount);
@@ -207,17 +204,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
 
     const pathname = usePathname();
-    const isDataChooseMode = pathname === '/train'; // true wenn train, false wenn choose
+    const isDataChooseMode = pathname === '/train';
 
 
     const toggleIsDataChooseMode = () => {
         resetStates();
 
         if (pathname === '/train') {
-            console.log("Wechsel von Train zu Choose");
             router.push('/choose');
         } else {
-            console.log("Wechsel von Choose zu Train");
             router.push('/train');
         }
         };
