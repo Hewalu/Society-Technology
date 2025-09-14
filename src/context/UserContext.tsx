@@ -4,6 +4,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 import { costLimit, datasets, Dataset } from '@/lib/datasets';
 import { useRouter, usePathname  } from 'next/navigation';
+import { kiModels } from '@/lib/ki-models';
 
 export type KiResult = {
     title: string;
@@ -143,39 +144,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
 
     const selectKiModel = (kiModelName: string) => {
-        const model = datasets.find((dataset) => dataset.name === kiModelName);
+        const model = kiModels.find((kiModel) => kiModel.name === kiModelName);
         if (!model) {
             toast.error('KI-Modell nicht gefunden.');
             return;
         }
-
-        // Setze das ausgewählte Dataset
-        const newSet = new Set<string>();
-        newSet.add(model.name);
-        setSelectedDatasets(newSet);
-
-        // Aktualisiere die Summen basierend auf dem ausgewählten Modell
-        setCost(model.cost);
+        toast.success(`KI-Modell "${model.name}" ausgewählt.`);
+        console.log("Ausgewähltes KI-Modell:", model);
+        // Hier könnten weitere Logiken folgen, z.B. das Setzen von States basierend auf dem Modell
+        
         setDiversity(model.diversity);
-        setPoints(model.points);
-        setBias(model.bias);
+        setPoints(model.tokenAmount);
+        setColors(model.sources.map(source => ({
+            name: source.color.name,
+            rgb: source.color.rgb,
+            ratio: source.color.ratio
+        })));
 
-        // Setze die Farben basierend auf dem Modell
-        if (model.color) {
-            setColors([{
-                name: model.color.name,
-                rgb: model.color.rgb,
-                ratio: model.color.ratio ?? 1, // falls ratio undefined, 1 verwenden
-            }]);
-        } else {
-            setColors([]);
-        }
+        setTimeout(() => {
+        router.push('/use');
+        }, 1000);
 
-        // Setze die Vorschau-States entsprechend
-        setPreviewCost(model.cost);
-        setPreviewDiversity(model.diversity);
-        setPreviewPoints(model.points);
-        setPreviewBias(model.bias);
+
     };
 
     const setPreview = (dataset: Dataset) => {

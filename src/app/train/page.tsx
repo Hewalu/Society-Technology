@@ -2,7 +2,6 @@
 
 import { NameDialog } from '@/components/name-dialog';
 import { Button } from '@/components/ui/button';
-import Link from "next/link";
 import { useUser } from '@/context/UserContext';
 import { Loader2, RotateCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';

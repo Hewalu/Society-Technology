@@ -21,7 +21,8 @@ export const kiModels: KiModel[] = [
         name: 'ChatGPT o3',
         description: 'Erste öffentlicher Version von ChatGPT von der Firma OpenAI.',
         diversity: 5,
-        tokenAmount: 300000000000,
+        tokenAmount: 30,
+        // tokenAmount: 300000000000,
         sources: [
             {
                 name: 'Common Crawl',
@@ -50,7 +51,8 @@ export const kiModels: KiModel[] = [
         name: 'ChatGPT o4',
         description: 'Weiterer öffentlicher Version von ChatGPT von der Firma OpenAI.',
         diversity: 9,
-        tokenAmount: 10000000000000,
+        tokenAmount: 100,
+        // tokenAmount: 10000000000000,
         sources: [
             {
                 name: 'Common Crawl',
