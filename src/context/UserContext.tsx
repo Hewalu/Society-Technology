@@ -143,6 +143,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
 
     const selectKiModel = (kiModelName: string) => {
+        console.log("selectKiModel wird aufgerufen mit:", kiModelName);
         const model = kiModels.find((kiModel) => kiModel.name === kiModelName);
         if (!model) {
             toast.error('KI-Modell nicht gefunden.');
@@ -157,12 +158,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
             rgb: source.color.rgb,
             ratio: source.color.ratio
         })));
-
-        setTimeout(() => {
-        router.push('/use');
-        }, 1000);
-
-
     };
 
     const setPreview = (dataset: Dataset) => {
