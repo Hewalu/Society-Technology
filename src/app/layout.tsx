@@ -5,6 +5,9 @@ import { UserProvider } from "@/context/UserContext";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { DemoModeProvider } from "@/context/DemoModeContext";
+import { DemoOverlay } from "@/components/demo/DemoOverlay";
+import { DemoLauncherButton } from "@/components/demo/DemoLauncherButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,15 +33,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <UserProvider>
-            <div className="fixed right-6 top-6 z-[999] flex items-center gap-2">
-              <ThemeToggle showLabel className="shadow-[0_18px_45px_rgba(15,23,42,0.35)]" />
-              <span className="hidden text-sm font-medium text-slate-800 dark:text-slate-200 sm:inline">
-                Theme
-              </span>
-            </div>
-            {children}
-          </UserProvider>
+          <DemoModeProvider>
+            <UserProvider>
+              <div className="fixed right-6 top-6 z-[999] flex items-center gap-2">
+                <ThemeToggle showLabel className="shadow-[0_18px_45px_rgba(15,23,42,0.35)]" />
+                <DemoLauncherButton />
+              </div>
+              {children}
+            </UserProvider>
+            <DemoOverlay />
+          </DemoModeProvider>
           <Toaster />
         </ThemeProvider>
       </body>
