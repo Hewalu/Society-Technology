@@ -107,8 +107,10 @@ const MIN_DIAMETER = 24;
 const MAX_DIAMETER = 96;
 const MIN_POINTS = 50;
 const MAX_POINTS = 400;
-const TOKEN_LOG_RANGE = { min: 9, max: 14.5 };
-const PARAM_LOG_RANGE = { min: 7, max: 12 };
+const DEFAULT_TOKEN_LOG_RANGE = { min: 9, max: 14.5 };
+const DEFAULT_PARAM_LOG_RANGE = { min: 7, max: 12 };
+const LOG_RANGE_CUSHION = 0.2;
+const POINTS_CURVE_EXPONENT = 1.3;
 const MAX_BLUR_SIGMA = 12;
 
 const rawModelData: RawModelEntry[] = [
@@ -1138,6 +1140,42 @@ const rawModelData: RawModelEntry[] = [
   },
 ];
 
+type LogRange = { min: number; max: number };
+
+const filterPositiveNumbers = (values: Array<number | null>) =>
+  values.filter((value): value is number => typeof value === 'number' && value > 0);
+
+const deriveLogRange = (values: number[], fallback: LogRange): LogRange => {
+  if (!values.length) return fallback;
+
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+
+  if (minValue <= 0 || maxValue <= 0) {
+    return fallback;
+  }
+
+  const minLog = Math.log10(minValue) - LOG_RANGE_CUSHION;
+  const maxLog = Math.log10(maxValue) + LOG_RANGE_CUSHION;
+
+  if (!Number.isFinite(minLog) || !Number.isFinite(maxLog) || minLog >= maxLog) {
+    return fallback;
+  }
+
+  return { min: minLog, max: maxLog };
+};
+
+// Derive scaling ranges from the catalog so point scores follow the real token spread.
+const TOKEN_LOG_RANGE = deriveLogRange(
+  filterPositiveNumbers(rawModelData.map((entry) => entry.training.tokens)),
+  DEFAULT_TOKEN_LOG_RANGE
+);
+
+const PARAM_LOG_RANGE = deriveLogRange(
+  filterPositiveNumbers(rawModelData.map((entry) => entry.training.parameters)),
+  DEFAULT_PARAM_LOG_RANGE
+);
+
 const slugify = (value: string) =>
   value
     .toLowerCase()
@@ -1146,18 +1184,26 @@ const slugify = (value: string) =>
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-const mapLogToPoints = (value: number | null, range: { min: number; max: number }) => {
+const mapLogToPoints = (value: number | null, range: LogRange) => {
   if (!value || value <= 0) return null;
+
+  const span = range.max - range.min;
+  if (span <= 0) return null;
+
   const logVal = Math.log10(value);
-  const normalized = (clamp(logVal, range.min, range.max) - range.min) / (range.max - range.min);
-  return Math.round(MIN_POINTS + normalized * (MAX_POINTS - MIN_POINTS));
+  const normalized = (clamp(logVal, range.min, range.max) - range.min) / span;
+  const curved = Math.pow(normalized, POINTS_CURVE_EXPONENT);
+
+  return Math.round(MIN_POINTS + curved * (MAX_POINTS - MIN_POINTS));
 };
 
 const calculatePoints = (training: TrainingInfo) => {
   const tokenPoints = mapLogToPoints(training.tokens, TOKEN_LOG_RANGE);
   if (tokenPoints !== null) return tokenPoints;
+
   const paramPoints = mapLogToPoints(training.parameters, PARAM_LOG_RANGE);
   if (paramPoints !== null) return paramPoints;
+
   return 120;
 };
 

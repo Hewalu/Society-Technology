@@ -16,6 +16,7 @@ interface ParticleCanvasProps {
   colors: ParticleColor[];
   spread?: number;
   blur?: number;
+  horizontalShift?: number;
 }
 
 const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
@@ -24,9 +25,15 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
   colors,
   spread,
   blur,
+  horizontalShift = 0,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { resolvedTheme } = useTheme();
+  const shiftRef = useRef(horizontalShift);
+
+  useEffect(() => {
+    shiftRef.current = horizontalShift;
+  }, [horizontalShift]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,7 +46,20 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
     canvas.height = window.innerHeight;
 
     let particles: Particle[] = [];
-    const center = { x: canvas.width / 2, y: canvas.height / 2 };
+    let center = { x: canvas.width / 2 + shiftRef.current, y: canvas.height / 2 };
+    const syncCenter = (smooth = true) => {
+      const targetX = canvas.width / 2 + shiftRef.current;
+      const targetY = canvas.height / 2;
+
+      if (!smooth) {
+        center.x = targetX;
+        center.y = targetY;
+        return;
+      }
+
+      center.x += (targetX - center.x) * 0.08;
+      center.y += (targetY - center.y) * 0.08;
+    };
     const spreadFactor = typeof spread === 'number' ? Math.max(0.2, spread) : 1;
     const isDarkMode = resolvedTheme === 'dark';
     const backgroundColor = isDarkMode ? '#050914' : '#FFFFFF';
@@ -135,6 +155,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
 
     const initParticles = () => {
       particles = [];
+      syncCenter(false);
       const totalParticles = points > 0 ? points * 8 : 1000;
 
       // Normiere die Ratios, falls sie nicht 1 ergeben
@@ -174,6 +195,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
     let animationFrameId: number;
     const animate = () => {
       if (!ctx) return;
+      syncCenter();
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -188,11 +210,11 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
       if (!canvas || !ctx) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      center.x = canvas.width / 2;
-      center.y = canvas.height / 2;
+      syncCenter(false);
       initParticles();
     };
 
+    syncCenter(false);
     initParticles();
     animate();
 

@@ -44,6 +44,7 @@ export default function CompareModelsPage() {
     DEFAULT_MODEL.defaults.colors.map((preset) => ({ ...preset }))
   );
   const [showControls, setShowControls] = useState(true);
+  const [canvasShift, setCanvasShift] = useState(0);
 
   const provider: ProviderEntry = useMemo(() => {
     return modelCatalog.find((entry) => entry.id === providerId) ?? DEFAULT_PROVIDER;
@@ -65,6 +66,32 @@ export default function CompareModelsPage() {
     setStructureDiameter(model.defaults.structureDiameter);
     setColorConfig(model.defaults.colors.map((preset) => ({ ...preset })));
   }, [model]);
+
+  useEffect(() => {
+    const updateShift = () => {
+      const { innerWidth: width } = window;
+
+      if (!showControls || width < 768) {
+        setCanvasShift(0);
+        return;
+      }
+
+      const maxPanelWidth = width >= 1280 ? 460 : 420;
+      const panelWidth = Math.min(width * 0.42, maxPanelWidth);
+      const safetyMargin = width >= 1280 ? 120 : 80;
+      const availableShift = Math.max(0, width / 2 - safetyMargin);
+      const shiftMagnitude = Math.min(panelWidth / 2 + 28, availableShift);
+
+      setCanvasShift(-shiftMagnitude);
+    };
+
+    updateShift();
+    window.addEventListener('resize', updateShift);
+
+    return () => {
+      window.removeEventListener('resize', updateShift);
+    };
+  }, [showControls]);
 
   const colors = useMemo(
     () =>
@@ -164,6 +191,7 @@ export default function CompareModelsPage() {
         colors={colors}
         spread={spread}
         blur={model.defaults.blur}
+        horizontalShift={canvasShift}
       />
 
       <Button

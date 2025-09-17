@@ -13,6 +13,7 @@ export default function UsePage() {
   const { name, colors, points, diversity, bias, cost, selectedDatasets } = useUser(); //Darf da Colors erin?
   const [kiResult, setKiResult] = useState<KiResult | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [canvasShift, setCanvasShift] = useState(0);
 
   //Beispielwerte für Farbschemata
   // const colorsList = [
@@ -26,13 +27,41 @@ export default function UsePage() {
     setKiResult(getKiResult(diversity, points, colors, bias, cost, name, selectedDatasets));
   }, [diversity, points, colors, bias, cost, name, selectedDatasets]);
 
+  useEffect(() => {
+    const updateShift = () => {
+      if (!isChatOpen) {
+        setCanvasShift(0);
+        return;
+      }
+
+      const width = window.innerWidth;
+      const chatWidth = Math.min(320, Math.max(0, width - 64));
+      const availableShift = Math.max(0, width / 2 - 80);
+      const shiftMagnitude = Math.min((chatWidth / 2) + 20, availableShift);
+
+      setCanvasShift(-shiftMagnitude);
+    };
+
+    updateShift();
+    window.addEventListener('resize', updateShift);
+
+    return () => {
+      window.removeEventListener('resize', updateShift);
+    };
+  }, [isChatOpen]);
+
   const toggleChat = () => {
     setIsChatOpen((prev) => !prev);
   };
 
   return (
     <main className="relative min-h-screen overflow-hidden px-6 py-12 md:px-12 text-slate-900 dark:text-slate-100">
-      <ParticleCanvas points={points} diversity={diversity} colors={colors} />
+      <ParticleCanvas
+        points={points}
+        diversity={diversity}
+        colors={colors}
+        horizontalShift={canvasShift}
+      />
 
       <div className="fixed bottom-8 right-8 z-20 flex flex-col items-end gap-4">
         <div
