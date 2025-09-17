@@ -87,10 +87,10 @@ type RawModelEntry = {
 };
 
 const SOURCE_COLOR_INFO: Record<keyof SourcesBreakdown, { name: string; hex: string }> = {
-  blue_classic_web: { name: 'Klassisches Web', hex: '#1D4ED8' },
-  red_social: { name: 'Soziale Medien', hex: '#DC2626' },
-  green_academic: { name: 'Wissenschaft', hex: '#059669' },
-  yellow_proprietary: { name: 'Proprietär', hex: '#F59E0B' },
+  blue_classic_web: { name: 'Klassisches Web', hex: '#2E5AAC' },
+  red_social: { name: 'Soziale Medien', hex: '#B94B4B' },
+  green_academic: { name: 'Wissenschaft', hex: '#2E8B75' },
+  yellow_proprietary: { name: 'Proprietär', hex: '#C38A20' },
   gray_synthetic: { name: 'Synthetisch', hex: '#6B7280' },
 };
 
