@@ -212,7 +212,7 @@ export default function CompareModelsPage() {
               <Button asChild variant="ghost" className="rounded-full border border-white/50 dark:border-white/20 bg-white/70 dark:bg-slate-900/80 backdrop-blur">
                 <Link href="/train" className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
                   <ChevronLeft className="h-4 w-4" />
-                  Zurück zum Training
+                  Zum KI-Training
                 </Link>
               </Button>
               <Button

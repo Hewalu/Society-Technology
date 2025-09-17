@@ -24,7 +24,7 @@ export default function Home() {
         KIs lernen aus Daten und spiegeln oft vorhandene Vorurteile und Machtverhältnisse wider. Systeme, die diese Verzerrungen übernehmen, sind oft effizienter, schneller und wirtschaftlich erfolgreicher. Genau deshalb werden viele Biases nicht korrigiert, sondern verstärkt. So entstehen Algorithmen, die scheinbar neutral sind, in Wahrheit aber Ungleichheit reproduzieren.
       </p>
       <Button asChild>
-        <Link href="/train">Weiter</Link>
+        <Link href="/train/compare">Weiter</Link>
       </Button>
     </main>
   );
