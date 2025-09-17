@@ -20,6 +20,8 @@ interface ParticleCanvasProps {
   convergence?: number;
 }
 
+const PARTICLE_MULTIPLIER = 5; // display multiple particles per dataset point
+
 const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
   points,
   diversity,
@@ -172,7 +174,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
     const initParticles = () => {
       particles = [];
       syncCenter(false);
-      const totalParticles = points > 0 ? Math.round(points) : 0;
+      const totalParticles = points > 0 ? Math.round(points * PARTICLE_MULTIPLIER) : 0;
 
       if (!colors.length || totalParticles === 0) {
         return;
