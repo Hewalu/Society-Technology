@@ -189,7 +189,7 @@ const rawModelData: RawModelEntry[] = [
     training: {
       tokens: 3.2e11,
       parameters: null,
-      notes: 'Basis GPT-3 + RLHF/Instruktionsdaten. Tokens geschätzt; Parameter nicht offengelegt.',
+      notes: 'Basis GPT-3 + RLHF/Instruktionsdaten. Tokens geschätzt (≈3.0–3.2e11); Parameter nicht offengelegt.',
     },
     diversity: {
       score_0_100: 58,
@@ -221,7 +221,7 @@ const rawModelData: RawModelEntry[] = [
     training: {
       tokens: 1.0e13,
       parameters: null,
-      notes: 'Sehr große Multimodal-Vorstufe; konkrete Größen nicht publiziert. Tokens geschätzt.',
+      notes: 'Mindestens ≈1.0e13 Tokens laut Leaks; konkrete Größen nicht publiziert.',
     },
     diversity: {
       score_0_100: 75,
@@ -251,9 +251,9 @@ const rawModelData: RawModelEntry[] = [
     model: 'GPT-5',
     release_date: '2025-07-08',
     training: {
-      tokens: 1.0e13,
+      tokens: 1.14e14,
       parameters: null,
-      notes: 'Sehr große Multimodal-Vorstufe; konkrete Größen nicht publiziert. Tokens geschätzt.',
+      notes: 'Geschätzt ≈1.14e14 Tokens (Multi-Modal). Konkrete Größen nicht publiziert.',
     },
     diversity: {
       score_0_100: 75,
@@ -283,9 +283,9 @@ const rawModelData: RawModelEntry[] = [
     model: 'PaLM',
     release_date: '2022-04-04',
     training: {
-      tokens: 3,
+      tokens: 7.8e11,
       parameters: 5.4e11,
-      notes: 'Paper mit Prozentanteilen (50% Social, 27% Web, 13% Books, 4% Wiki, 5% Code, 1% News).',
+      notes: 'Paper nennt ≈7.8e11 Tokens (780B). Prozentanteile: 50% Social, 27% Web, 13% Books, 4% Wiki, 5% Code, 1% News.',
     },
     diversity: {
       score_0_100: 62,
@@ -347,9 +347,9 @@ const rawModelData: RawModelEntry[] = [
     model: 'Gemini 1.0 Pro',
     release_date: '2023-12-06',
     training: {
-      tokens: null,
+      tokens: 7.5e12,
       parameters: null,
-      notes: 'Nativ multimodal (Text, Code, Bild/Audio). Größen nicht veröffentlicht.',
+      notes: 'Nativ multimodal (Text, Code, Bild/Audio). Tokens geschätzt (≈5.0e12–1.0e13).',
     },
     diversity: {
       score_0_100: 80,
@@ -379,9 +379,9 @@ const rawModelData: RawModelEntry[] = [
     model: 'Gemini 1.5 Pro',
     release_date: '2024-05-14',
     training: {
-      tokens: null,
+      tokens: 1.1e13,
       parameters: null,
-      notes: 'Längere Kontexte, multimodal; keine Größenangaben.',
+      notes: 'Längere Kontexte, multimodal; Tokens geschätzt (≈1.0e13–1.2e13).',
     },
     diversity: {
       score_0_100: 82,
@@ -411,9 +411,9 @@ const rawModelData: RawModelEntry[] = [
     model: 'Claude 2',
     release_date: '2023-07-11',
     training: {
-      tokens: null,
+      tokens: 3.0e12,
       parameters: 7.0e10,
-      notes: 'Parametergröße geschätzt (~70B). Tokens nicht publiziert.',
+      notes: 'Tokens geschätzt (≈1.0e12–5.0e12); Parametergröße ≈70B.',
     },
     diversity: {
       score_0_100: 55,
@@ -440,12 +440,12 @@ const rawModelData: RawModelEntry[] = [
   },
   {
     provider: 'Anthropic',
-    model: 'Claude 3 Sonnet',
+    model: 'Claude 3 Opus',
     release_date: '2024-03-04',
     training: {
-      tokens: null,
+      tokens: 4.0e13,
       parameters: null,
-      notes: 'Multimodal, neue Trainingspipeline. Größen nicht veröffentlicht.',
+      notes: 'Multimodal, neue Trainingspipeline. Tokens geschätzt ≈4.0e13.',
     },
     diversity: {
       score_0_100: 75,
