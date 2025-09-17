@@ -14,84 +14,75 @@ export interface Dataset {
 
 export const datasets: Dataset[] = [
     {
-        name: 'Business E-Mails',
+        name: 'Web-Crawl',
         color: { name: 'Grün', rgb: '34,139,34', ratio: 0 },
-        description: 'Formelle Korrespondenz aus internationalen Unternehmen. Stark strukturiert, aber meist einseitig westlich und männlich dominiert.',
-        cost: 40,
-        diversity: 5,
-        bias: 200,
-        points: 65
-    },
-    {
-        name: 'Wissenschaftliche Texte',
-        color: { name: 'Rot', rgb: '205,0,0', ratio: 0  },
-        description: 'Akademische Publikationen mit hoher sprachlicher Präzision, jedoch oft elitär, westlich geprägt und wenig divers in Perspektiven.',
-        cost: 35,
-        diversity: 15,
-        bias: 50,
-        points: 80
-    },
-    {
-        name: 'Weltliteratur',
-        color: { name: 'Blau', rgb: '24,116,205', ratio: 0  },
-        description: 'Klassische Literatur aus verschiedenen Epochen. Literarisch wertvoll, aber häufig eurozentrisch und nicht inklusiv.',
-        cost: 10,
-        diversity: 20,
+        description: 'Wikipedia, Blogs, News, Foren. Standardquelle fast aller Modelle (Common Crawl). Sehr groß, günstig, aber voller Bias und Fehler.',
+        cost: 30,
+        diversity: 40,
         bias: 150,
-        points: 60
-    },
-    {
-        name: 'Multilingual News',
-        color: { name: 'Gelb', rgb: '255,215,0', ratio: 0  },
-        description: 'Nachrichtenartikel aus verschiedenen Regionen und Sprachen. Breite Perspektiven, jedoch redaktionell gefiltert.',
-        cost: 50,
-        diversity: 80,
-        bias: 20,
-        points: 60
+        points: 70
     },
     {
         name: 'Soziale Medien',
-        color: { name: 'Lila', rgb: '153,50,204', ratio: 0  },
-        description: 'Kurze, ungefilterte Posts aus Plattformen wie Twitter oder TikTok. Große Datenmenge, aber oft voller toxischer Sprache und Bias.',
-        cost: 15,
-        diversity: 20,
-        bias: 90,
-        points: 110
-    },
-    {
-        name: 'Foren',
-        color: { name: 'Pink', rgb: '255,52,179', ratio: 0  },
-        description: 'Diskussionen aus Online-Foren wie Reddit oder StackExchange. Hohe Meinungsvielfalt, aber oft wenig moderiert und polarisierend.',
+        color: { name: 'Lila', rgb: '153,50,204', ratio: 0 },
+        description: 'Reddit, X (Twitter), Foren-Kommentare. Liefert Dialog- und Umgangssprache, aber toxisch, laut und bias-anfällig.',
         cost: 20,
-        diversity: 20,
-        bias: 100,
-        points: 85
+        diversity: 30,
+        bias: 120,
+        points: 95
     },
     {
-        name: 'Community Voices',
-        color: { name: 'Schwarz', rgb: '0,0,0', ratio: 0  },
-        description: 'Interviews, Blogs und Erzählungen marginalisierter Gruppen. Sehr vielfältig und wertvoll, aber schwer auffindbar und teuer zu kuratieren.',
-        cost: 70,
-        diversity: 100,
-        bias: 10,
-        points: 35
-    },
-    {
-        name: 'Indigene Spracharchive',
-        color: { name: 'Orange', rgb: '255,127,0', ratio: 0  },
-        description: 'Seltene Texte und Audioquellen in indigenen Sprachen. Extrem divers, aber sensibel, schwer zugänglich und ethisch anspruchsvoll.',
-        cost: 90,
-        diversity: 95,
-        bias: 5,
-        points: 20
-    },
-    {
-        name: 'Copyrightgeschützte Inhalte',
-        color: { name: 'Braun', rgb: '139,71,38', ratio: 0  },
-        description: 'Kommerzielle Bücher, Filme oder Songs unter Urheberrecht. Einfach zu verwenden – solange man Rechte ignoriert.',
-        cost: 20,
+        name: 'Bücher & Weltliteratur',
+        color: { name: 'Blau', rgb: '24,116,205', ratio: 0 },
+        description: 'Öffentlich verfügbare und lizensierte Bücher. Hochwertige Texte für Stil und Argumentation, aber teuer wegen Copyright.',
+        cost: 50,
         diversity: 35,
-        bias: 20,
+        bias: 60,
+        points: 80
+    },
+    {
+        name: 'Wissenschaftliche Literatur',
+        color: { name: 'Rot', rgb: '205,0,0', ratio: 0 },
+        description: 'ArXiv, PubMed, Open Access Publikationen. Hohe Qualität und Fachwissen, aber klein und schwer lizensierbar.',
+        cost: 40,
+        diversity: 25,
+        bias: 30,
         points: 75
+    },
+    {
+        name: 'Code & technische Dokumentation',
+        color: { name: 'Orange', rgb: '255,140,0', ratio: 0 },
+        description: 'GitHub, StackOverflow, technische Handbücher. Zentrale Quelle für Coding-Modelle, bringt aber Copyright- und Lizenzrisiken.',
+        cost: 35,
+        diversity: 20,
+        bias: 40,
+        points: 90
+    },
+    {
+        name: 'Multilinguale Nachrichtenquellen',
+        color: { name: 'Gelb', rgb: '255,215,0', ratio: 0 },
+        description: 'Nachrichtenartikel aus verschiedenen Regionen und Sprachen. Wichtig für internationale Performance, aber aufwendiger und teurer.',
+        cost: 60,
+        diversity: 85,
+        bias: 25,
+        points: 70
+    },
+    {
+        name: 'Proprietäre Unternehmensdaten',
+        color: { name: 'Braun', rgb: '139,71,38', ratio: 0 },
+        description: 'E-Mails, Support-Chats, Handbücher. Sehr wertvoll für Spezialisierung, aber teuer und mit Datenschutzrisiken verbunden.',
+        cost: 80,
+        diversity: 40,
+        bias: 35,
+        points: 50
+    },
+    {
+        name: 'Synthetische Daten',
+        color: { name: 'Grau', rgb: '128,128,128', ratio: 0 },
+        description: 'KI-generiert, Self-Play, Reinforcement Learning. Günstig und steuerbar, aber Gefahr von „KI trainiert KI“-Schleifen.',
+        cost: 10,
+        diversity: 50,
+        bias: 60,
+        points: 85
     }
 ];
