@@ -429,7 +429,10 @@ export default function CompareModelsPage() {
                   Berechnete Vielfalt: <span className="font-semibold text-slate-700 dark:text-slate-100">{diversity}</span>
                 </p>
                 <p>
-                  Gesamte Partikel: <span className="font-semibold text-slate-700 dark:text-slate-100">{points * 8}</span>
+                  Tokens: <span className="font-semibold text-slate-700 dark:text-slate-100">{formatLargeNumber(model.metrics.training.tokens, 'tokens')}</span>
+                </p>
+                <p>
+                  Gesamte Partikel (Punkte): <span className="font-semibold text-slate-700 dark:text-slate-100">{points}</span>
                 </p>
                 <p>
                   Blur σ: <span className="font-semibold text-slate-700 dark:text-slate-100">{model.defaults.blur.toFixed(2)}</span>
