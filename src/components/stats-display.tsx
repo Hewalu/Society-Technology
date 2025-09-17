@@ -24,33 +24,33 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, previewValue, maxValue,
     const barToShowAsPreview = isPreviewingRemoval ? percentage : previewPercentage;
     const barToShowAsMain = isPreviewingRemoval ? previewPercentage : percentage;
 
-    let previewBarColor = isPreviewOverLimit ? 'bg-red-300' : 'bg-gray-200';
+    let previewBarColor = isPreviewOverLimit ? 'bg-red-300 dark:bg-red-500/70' : 'bg-slate-200 dark:bg-slate-700/80';
     if (isPreviewingRemoval) {
-        previewBarColor = 'bg-blue-500';
+        previewBarColor = 'bg-blue-500 dark:bg-blue-400/80';
     }
 
     return (
         <div className="w-full pb-4 flex flex-col">
             <div className="flex justify-between items-center mb-4">
-                <span className="text-base font-medium text-gray-700">{label}</span>
+                <span className="text-base font-medium text-slate-700 dark:text-slate-100">{label}</span>
                 {showNumber && (
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-slate-500 dark:text-slate-300">
                         {isPreviewingRemoval ? previewValue : value} / {maxValue}
                     </span>
                 )}
             </div>
-            <div className="w-full bg-white rounded-full h-[12px] relative">
+            <div className="w-full bg-white dark:bg-slate-900/70 rounded-full h-[12px] relative">
                 <div
                     className={`${previewBarColor} h-[12px] rounded-full absolute transition-all duration-300`}
                     style={{ width: `${barToShowAsPreview}%` }}
                 ></div>
                 <div
-                    className="bg-blue-300 h-[12px] rounded-full absolute transition-all duration-300"
+                    className="bg-blue-300 dark:bg-blue-500 h-[12px] rounded-full absolute transition-all duration-300"
                     style={{ width: `${barToShowAsMain}%` }}
                 ></div>
                 {limitPercentage !== undefined && (
                     <div
-                        className="absolute top-[-8px] bottom-[-8px] w-[2.5px] bg-black rounded-full"
+                        className="absolute top-[-8px] bottom-[-8px] w-[2.5px] bg-black dark:bg-white rounded-full"
                         style={{ left: `${limitPercentage}%` }}
                     ></div>
                 )}
@@ -80,7 +80,7 @@ export function StatsDisplay() {
     };
 
     return (
-        <div className="bg-gray-100 p-4 rounded-md w-full flex flex-col gap-4 h-fit">
+        <div className="bg-white/80 dark:bg-slate-900/70 p-4 rounded-md w-full flex flex-col gap-4 h-fit backdrop-blur">
             <div className="flex justify-between items-center mb-2">
                 {isEditing ? (
                     <div className="flex items-center gap-2 w-full">
@@ -90,14 +90,14 @@ export function StatsDisplay() {
                             onChange={(e) => setNewName(e.target.value)}
                             onKeyDown={handleKeyDown}
                             autoFocus
-                            className="text-2xl font-bold bg-transparent border-b-2 border-gray-300 focus:outline-none w-full "
+                            className="text-2xl font-bold bg-transparent border-b-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 focus:outline-none w-full"
                         />
-                        <Check className="h-6 w-6 cursor-pointer text-green-600 mr-2 ml-6" onClick={handleNameChange} />
+                        <Check className="h-6 w-6 cursor-pointer text-emerald-600 dark:text-emerald-400 mr-2 ml-6" onClick={handleNameChange} />
                     </div>
                 ) : (
                     <>
-                        <h2 className="text-2xl font-bold border-b-2 border-gray-100">{`${name}:`}</h2>
-                        <Pencil className="h-5 w-5 cursor-pointer text-gray-600 hover:text-black mr-2 ml-6" onClick={() => setIsEditing(true)} />
+                        <h2 className="text-2xl font-bold border-b-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100">{`${name}:`}</h2>
+                        <Pencil className="h-5 w-5 cursor-pointer text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white mr-2 ml-6" onClick={() => setIsEditing(true)} />
                     </>
                 )}
             </div>

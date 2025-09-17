@@ -50,22 +50,26 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
 
     return (
         <div
-            className={`flex items-center justify-between p-2 px-4 py-3 rounded-md cursor-pointer ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}
+            className={`flex items-center justify-between p-2 px-4 py-3 rounded-md cursor-pointer transition-colors ${
+                isSelected
+                    ? 'bg-indigo-100 dark:bg-indigo-500/30'
+                    : 'bg-white/80 dark:bg-slate-900/70'
+            }`}
             onClick={handleToggle}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
             <div className="flex items-center gap-4 justify-between w-full">
                 <div className="flex items-center gap-4">
-                    <Checkbox checked={isSelected} className="bg-white" />
-                    <span className="font-medium">{dataset.name}</span>
+                    <Checkbox checked={isSelected} className="bg-white dark:bg-slate-900" />
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{dataset.name}</span>
                 </div>
                 <TooltipProvider>
                     <Tooltip>
                         <Dialog>
                             <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
                                 <DialogTrigger asChild>
-                                    <Info className="h-[18px] w-[18px] text-gray-600" />
+                                    <Info className="h-[18px] w-[18px] text-slate-600 dark:text-slate-300" />
                                 </DialogTrigger>
                             </TooltipTrigger>
                             <DialogContent onClick={(e) => e.stopPropagation()}>

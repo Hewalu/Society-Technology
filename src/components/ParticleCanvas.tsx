@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { ParticleColor } from '@/context/UserContext';
+import { useTheme } from 'next-themes';
 
 // interface ParticleColor {
 //   name: string;     // z.B. "Rot"
@@ -13,10 +14,19 @@ interface ParticleCanvasProps {
   points: number;
   diversity: number;
   colors: ParticleColor[];
+  spread?: number;
+  blur?: number;
 }
 
-const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colors }) => {
+const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
+  points,
+  diversity,
+  colors,
+  spread,
+  blur,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -29,7 +39,13 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colo
     canvas.height = window.innerHeight;
 
     let particles: Particle[] = [];
-    const center = { x: canvas.width / 3.5, y: canvas.height / 2 };
+    const center = { x: canvas.width / 2, y: canvas.height / 2 };
+    const spreadFactor = typeof spread === 'number' ? Math.max(0.2, spread) : 1;
+    const isDarkMode = resolvedTheme === 'dark';
+    const backgroundColor = isDarkMode ? '#050914' : '#FFFFFF';
+    const blurSigma = typeof blur === 'number' ? Math.max(0, blur) : 0;
+    const particleAlpha = isDarkMode ? 0.88 : 0.78;
+    const particleGlow = (isDarkMode ? 6 : 4) + blurSigma * (isDarkMode ? 1.6 : 1.3);
 
     class Particle {
       x: number;
@@ -49,8 +65,9 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colo
         this.radius = 1 + Math.random() * 1.5;
         this.angle = Math.random() * 2 * Math.PI;
         this.color = color;
-        // Adjust orbit radius based on diversity
-        this.orbitRadius = 40 + Math.random() * (25 + diversity * 2.5);
+        // Adjust orbit radius based on diversity and external spread control
+        const baseOrbit = 40 + Math.random() * (25 + diversity * 2.5);
+        this.orbitRadius = baseOrbit * spreadFactor;
       }
 
       update() {
@@ -105,10 +122,14 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colo
 
       draw() {
         if (!ctx) return;
+        ctx.save();
+        ctx.shadowBlur = particleGlow;
+        ctx.shadowColor = `rgba(${this.color}, ${isDarkMode ? 0.55 : 0.35})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgb(${this.color})`;
+        ctx.fillStyle = `rgba(${this.color}, ${particleAlpha})`;
         ctx.fill();
+        ctx.restore();
       }
     }
 
@@ -126,10 +147,10 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colo
           const angle = Math.random() * 2 * Math.PI;
 
           // Adjust minRadius based on diversity
-          const minRadius = diversity > 10 ? 50 : 0;
+          const minRadius = (diversity > 10 ? 50 : 0) * spreadFactor;
 
           // Max radius is now based on screen height
-          const maxScreenRadius = (canvas.height / 2) - 150;
+          const maxScreenRadius = Math.max(minRadius + 25, ((canvas.height / 2) - 150) * spreadFactor);
 
           // Scale diversity effect with points
           const diversityFactor = (diversity / 100) * (1 + points / 500);
@@ -153,7 +174,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colo
     let animationFrameId: number;
     const animate = () => {
       if (!ctx) return;
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       for (const p of particles) {
@@ -181,8 +202,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ points, diversity, colo
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [points, diversity, colors]);
-  console.log("Rendering ParticleCanvas with points:", points, "diversity:", diversity, "colors:", colors);
+  }, [points, diversity, colors, spread, blur, resolvedTheme]);
   return <canvas ref={canvasRef} className="absolute top-0 left-0 -z-10" />;
 };
 
