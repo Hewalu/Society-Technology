@@ -37,7 +37,10 @@ const getBiasDescription = (bias: number): string => {
     return 'Dank einer vielfältigen Datengrundlage ist der Bias deiner KI erfreulich gering. Sie kann Anfragen aus verschiedenen kulturellen Kontexten fair und ausgewogen beantworten.';
 };
 
-const getDiversityDescription = (diversity: number): string => {
+const getDiversityDescription = (diversity: number, bias: number): string => {
+    if (diversity > 65 && bias > 60) {
+        return 'Bei genauen und spezifischen Anfragen kann sie jedoch auch Antworten aus aller Welt leifern, da sie zu einem kleinen Teil trotzdem mit diversen Daten trainiert wurde.';
+    }    
     if (diversity > 65) {
         return 'Sie wurde mit Daten aus aller Welt trainiert, was ihre Antworten kulturell reich und vielfältig macht.';
     }
@@ -70,10 +73,9 @@ export const getKiResult = (
     const description = [
         getPointsDescription(points),
         getCompetenceDescription(selectedDatasets),
-        getDiversityDescription(diversity),
         getBiasDescription(bias),
+        getDiversityDescription(diversity, bias),
         getCostDescription(cost),
-        //Hier auch Farben übergeben? Mal schauen wird wsl eh noch geändert...
     ].join(' \n\n');
 
     return {
