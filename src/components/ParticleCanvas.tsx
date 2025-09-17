@@ -46,7 +46,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
     canvas.height = window.innerHeight;
 
     let particles: Particle[] = [];
-    let center = { x: canvas.width / 2 + shiftRef.current, y: canvas.height / 2 };
+    const center = { x: canvas.width / 2 + shiftRef.current, y: canvas.height / 2 };
     const syncCenter = (smooth = true) => {
       const targetX = canvas.width / 2 + shiftRef.current;
       const targetY = canvas.height / 2;
@@ -156,15 +156,40 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
     const initParticles = () => {
       particles = [];
       syncCenter(false);
-      const totalParticles = points > 0 ? points * 8 : 1000;
+      const totalParticles = points > 0 ? Math.round(points) : 0;
 
-      // Normiere die Ratios, falls sie nicht 1 ergeben
+      if (!colors.length || totalParticles === 0) {
+        return;
+      }
+
       const totalRatio = colors.reduce((sum, c) => sum + c.ratio, 0);
+      const equalWeight = 1 / colors.length;
 
-      colors.forEach(colorDef => {
-        const numParticles = Math.floor((colorDef.ratio / totalRatio) * totalParticles);
+      const allocations = colors.map((colorDef, index) => {
+        const weight = totalRatio > 0 ? colorDef.ratio / totalRatio : equalWeight;
+        const exact = weight * totalParticles;
+        const base = Math.floor(exact);
+        return {
+          index,
+          colorDef,
+          base,
+          fraction: exact - base,
+        };
+      });
 
-        for (let i = 0; i < numParticles; i++) {
+      const assigned = allocations.reduce((sum, entry) => sum + entry.base, 0);
+      let remaining = totalParticles - assigned;
+
+      if (remaining > 0) {
+        const sortedRemainders = [...allocations].sort((a, b) => b.fraction - a.fraction);
+        for (let i = 0; i < sortedRemainders.length && remaining > 0; i++) {
+          allocations[sortedRemainders[i].index].base += 1;
+          remaining -= 1;
+        }
+      }
+
+      allocations.forEach(({ colorDef, base }) => {
+        for (let i = 0; i < base; i++) {
           const angle = Math.random() * 2 * Math.PI;
 
           // Adjust minRadius based on diversity

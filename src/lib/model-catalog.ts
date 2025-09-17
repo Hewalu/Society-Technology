@@ -6,6 +6,7 @@ export type ModelColorPreset = {
 
 export type ModelDefaults = {
   points: number;
+  pointsNote: string | null;
   structureDiameter: number;
   blur: number;
   colors: ModelColorPreset[];
@@ -105,10 +106,15 @@ const PROVIDER_SUMMARIES: Record<string, string> = {
 
 const MIN_DIAMETER = 24;
 const MAX_DIAMETER = 96;
-const MIN_POINTS = 50;
-const MAX_POINTS = 400;
-const TOKEN_LOG_RANGE = { min: 9, max: 14.5 };
-const PARAM_LOG_RANGE = { min: 7, max: 12 };
+const POINTS_MIN = 0;
+const POINTS_MAX = 3000;
+const LOG_TOKEN_MIN = 11.0;
+const LOG_TOKEN_MAX = 14.06;
+const POINTS_GAMMA = 1.0;
+// Grobe Umrechnung, falls nur Parameterangaben vorliegen (≈20 Tokens pro Parameter im Sprachmodellmaßstab).
+const PARAMETER_TO_TOKEN_FACTOR = 20;
+const FALLBACK_POINTS = 1200;
+const FALLBACK_NOTE = 'geschätzt';
 const MAX_BLUR_SIGMA = 12;
 
 const rawModelData: RawModelEntry[] = [
@@ -212,6 +218,38 @@ const rawModelData: RawModelEntry[] = [
     provider: 'OpenAI',
     model: 'GPT-4',
     release_date: '2023-03-14',
+    training: {
+      tokens: 1.0e13,
+      parameters: null,
+      notes: 'Sehr große Multimodal-Vorstufe; konkrete Größen nicht publiziert. Tokens geschätzt.',
+    },
+    diversity: {
+      score_0_100: 75,
+      rationale: 'Multimodal (Text/Bild), stärker mehrsprachig; breite Domänen. Geschätzt.',
+    },
+    sources_breakdown_pct: {
+      blue_classic_web: 55,
+      red_social: 5,
+      green_academic: 5,
+      yellow_proprietary: 10,
+      gray_synthetic: 25,
+    },
+    transparency: {
+      score_0_100: 20,
+      rationale: 'Architektur/Datensätze weitgehend geheim. Geschätzte Transparenz.',
+    },
+    estimated_flags: {
+      training_tokens: true,
+      training_parameters: true,
+      diversity: true,
+      sources: true,
+      transparency: true,
+    },
+  },
+  {
+    provider: 'OpenAI',
+    model: 'GPT-5',
+    release_date: '2025-07-08',
     training: {
       tokens: 1.0e13,
       parameters: null,
@@ -437,7 +475,7 @@ const rawModelData: RawModelEntry[] = [
     model: 'PaLM',
     release_date: '2022-04-04',
     training: {
-      tokens: 7.8e11,
+      tokens: 3,
       parameters: 5.4e11,
       notes: 'Paper mit Prozentanteilen (50% Social, 27% Web, 13% Books, 4% Wiki, 5% Code, 1% News).',
     },
@@ -1146,19 +1184,35 @@ const slugify = (value: string) =>
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-const mapLogToPoints = (value: number | null, range: { min: number; max: number }) => {
-  if (!value || value <= 0) return null;
-  const logVal = Math.log10(value);
-  const normalized = (clamp(logVal, range.min, range.max) - range.min) / (range.max - range.min);
-  return Math.round(MIN_POINTS + normalized * (MAX_POINTS - MIN_POINTS));
+const mapTokensToPoints = (tokens: number | null) => {
+  if (!tokens || tokens <= 0) return null;
+
+  const logValue = Math.log10(tokens);
+  const normalized = (logValue - LOG_TOKEN_MIN) / (LOG_TOKEN_MAX - LOG_TOKEN_MIN);
+  const clamped = clamp(normalized, 0, 1);
+  const curved = Math.pow(clamped, POINTS_GAMMA);
+  const scaled = POINTS_MIN + (POINTS_MAX - POINTS_MIN) * curved;
+
+  return Math.round(clamp(scaled, POINTS_MIN, POINTS_MAX));
 };
 
 const calculatePoints = (training: TrainingInfo) => {
-  const tokenPoints = mapLogToPoints(training.tokens, TOKEN_LOG_RANGE);
-  if (tokenPoints !== null) return tokenPoints;
-  const paramPoints = mapLogToPoints(training.parameters, PARAM_LOG_RANGE);
-  if (paramPoints !== null) return paramPoints;
-  return 120;
+  const tokenPoints = mapTokensToPoints(training.tokens);
+  if (tokenPoints !== null) {
+    return { points: tokenPoints, note: null };
+  }
+
+  const parameterBasedTokens =
+    typeof training.parameters === 'number' && training.parameters > 0
+      ? training.parameters * PARAMETER_TO_TOKEN_FACTOR
+      : null;
+
+  const parameterPoints = mapTokensToPoints(parameterBasedTokens);
+  if (parameterPoints !== null) {
+    return { points: parameterPoints, note: FALLBACK_NOTE };
+  }
+
+  return { points: FALLBACK_POINTS, note: FALLBACK_NOTE };
 };
 
 const mapDiversityToDiameter = (score: number) => {
@@ -1240,13 +1294,16 @@ for (const raw of rawModelData) {
   const providerEntry = providerMap.get(providerId);
   if (!providerEntry) continue;
 
+  const calculated = calculatePoints(raw.training);
+
   providerEntry.models.push({
     id: slugify(raw.model),
     name: raw.model,
     releaseDate: raw.release_date,
     description: createDescription(raw),
     defaults: {
-      points: calculatePoints(raw.training),
+      points: calculated.points,
+      pointsNote: calculated.note,
       structureDiameter: mapDiversityToDiameter(raw.diversity.score_0_100),
       blur: mapTransparencyToBlur(raw.transparency.score_0_100),
       colors: buildColorPresets(raw.sources_breakdown_pct),
