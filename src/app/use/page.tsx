@@ -14,6 +14,7 @@ export default function UsePage() {
   const [kiResult, setKiResult] = useState<KiResult | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [canvasShift, setCanvasShift] = useState(0);
+  const particlePoints = points * 5;
 
   //Beispielwerte für Farbschemata
   // const colorsList = [
@@ -57,7 +58,7 @@ export default function UsePage() {
   return (
     <main className="relative min-h-screen overflow-hidden px-6 py-12 md:px-12 text-slate-900 dark:text-slate-100">
       <ParticleCanvas
-        points={points}
+        points={particlePoints}
         diversity={diversity}
         colors={colors}
         horizontalShift={canvasShift}

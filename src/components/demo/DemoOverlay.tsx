@@ -67,7 +67,7 @@ export function DemoOverlay() {
   const [convergence, setConvergence] = useState(1);
   const [progress, setProgress] = useState(0);
   const convergenceValueRef = useRef(convergence);
-  const convergenceAnimationRef = useRef<number>();
+  const convergenceAnimationRef = useRef<number | null>(null);
   const convergenceResolveRef = useRef<(() => void) | null>(null);
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
@@ -80,7 +80,7 @@ export function DemoOverlay() {
     return () => {
       if (convergenceAnimationRef.current) {
         cancelAnimationFrame(convergenceAnimationRef.current);
-        convergenceAnimationRef.current = undefined;
+        convergenceAnimationRef.current = null;
       }
 
       if (convergenceResolveRef.current) {
@@ -96,7 +96,7 @@ export function DemoOverlay() {
 
       if (convergenceAnimationRef.current) {
         cancelAnimationFrame(convergenceAnimationRef.current);
-        convergenceAnimationRef.current = undefined;
+        convergenceAnimationRef.current = null;
       }
 
       if (convergenceResolveRef.current) {
@@ -119,7 +119,7 @@ export function DemoOverlay() {
         const finish = () => {
           convergenceValueRef.current = clampedTarget;
           setConvergence(clampedTarget);
-          convergenceAnimationRef.current = undefined;
+          convergenceAnimationRef.current = null;
           convergenceResolveRef.current = null;
           resolve();
         };
@@ -266,7 +266,7 @@ export function DemoOverlay() {
 
       if (convergenceAnimationRef.current) {
         cancelAnimationFrame(convergenceAnimationRef.current);
-        convergenceAnimationRef.current = undefined;
+        convergenceAnimationRef.current = null;
       }
       if (convergenceResolveRef.current) {
         convergenceResolveRef.current();

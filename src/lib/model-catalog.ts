@@ -123,7 +123,7 @@ const rawModelData: RawModelEntry[] = [
     model: 'GPT-2',
     release_date: '2019-11-05',
     training: {
-      tokens: 1.0e10,
+      tokens: 2.0e10,
       parameters: 1.5e9,
       notes: 'WebText aus Reddit-Links; Korpus nicht veröffentlicht. Tokens geschätzt.',
     },
