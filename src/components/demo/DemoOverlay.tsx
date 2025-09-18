@@ -217,7 +217,7 @@ export function DemoOverlay() {
       if (cancelled) return;
 
       const cycleDuration = 20000;
-      const collapseDuration = 900;
+      const collapseDuration = 1300;
       const collapsedPause = 220;
       const preExpandFrameDelay = 16;
       const expandDuration = 1100;
@@ -364,6 +364,8 @@ export function DemoOverlay() {
         spread={currentEntry.spread}
         blur={currentEntry.blur}
         convergence={convergence}
+        sizeMultiplier={1.4}
+        centerOnScreen
       />
       <div className="absolute left-0 right-0 top-0 flex items-start justify-end p-6">
         <Button

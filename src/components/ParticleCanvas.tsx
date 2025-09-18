@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { ParticleColor } from '@/context/UserContext';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 // interface ParticleColor {
 //   name: string;     // z.B. "Rot"
@@ -18,6 +19,9 @@ interface ParticleCanvasProps {
   blur?: number;
   horizontalShift?: number;
   convergence?: number;
+  sizeMultiplier?: number;
+  centerOnScreen?: boolean;
+  className?: string;
 }
 
 const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
@@ -28,12 +32,16 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
   blur,
   horizontalShift = 0,
   convergence = 1,
+  sizeMultiplier = 1,
+  centerOnScreen = false,
+  className,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { resolvedTheme } = useTheme();
   const shiftRef = useRef(horizontalShift);
   const initialConvergence = Math.min(Math.max(convergence, 0), 1);
   const convergenceRef = useRef(initialConvergence);
+  const canvasSizeRef = useRef({ width: 0, height: 0 });
 
   useEffect(() => {
     shiftRef.current = horizontalShift;
@@ -50,15 +58,37 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    const normalizedMultiplier = Math.max(sizeMultiplier, 1);
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const applyCanvasSize = () => {
+      const ratio = window.devicePixelRatio || 1;
+      const width = window.innerWidth * normalizedMultiplier;
+      const height = window.innerHeight * normalizedMultiplier;
+
+      canvasSizeRef.current = { width, height };
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      if (typeof ctx.resetTransform === 'function') {
+        ctx.resetTransform();
+      } else {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      ctx.scale(ratio, ratio);
+    };
+
+    applyCanvasSize();
 
     let particles: Particle[] = [];
-    const center = { x: canvas.width / 2 + shiftRef.current, y: canvas.height / 2 };
+    const center = {
+      x: canvasSizeRef.current.width / 2 + shiftRef.current,
+      y: canvasSizeRef.current.height / 2,
+    };
     const syncCenter = (smooth = true) => {
-      const targetX = canvas.width / 2 + shiftRef.current;
-      const targetY = canvas.height / 2;
+      const targetX = canvasSizeRef.current.width / 2 + shiftRef.current;
+      const targetY = canvasSizeRef.current.height / 2;
 
       if (!smooth) {
         center.x = targetX;
@@ -226,7 +256,10 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
           const minRadius = (diversity > 10 ? 50 : 0) * spreadFactor;
 
           // Max radius is now based on screen height
-          const maxScreenRadius = Math.max(minRadius + 25, ((canvas.height / 2) - 150) * spreadFactor);
+          const maxScreenRadius = Math.max(
+            minRadius + 25,
+            ((canvasSizeRef.current.height / 2) - 150) * spreadFactor
+          );
 
           // Scale diversity effect with points
           const diversityFactor = (diversity / 100) * (1 + points / 500);
@@ -235,7 +268,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
           // Skew distribution towards center
           const randomFactor = Math.pow(Math.random(), 3);
           const radius = minRadius + randomFactor * (maxRadius - minRadius);
-      const seedConvergence = getConvergenceScale();
+          const seedConvergence = getConvergenceScale();
           const spawnRadius = radius * seedConvergence;
 
           const x = center.x + Math.cos(angle) * spawnRadius;
@@ -254,7 +287,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
       if (!ctx) return;
       syncCenter();
       ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, canvasSizeRef.current.width, canvasSizeRef.current.height);
 
       for (const p of particles) {
         p.update();
@@ -265,8 +298,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
 
     const handleResize = () => {
       if (!canvas || !ctx) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      applyCanvasSize();
       syncCenter(false);
       initParticles();
     };
@@ -281,8 +313,15 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [points, diversity, colors, spread, blur, resolvedTheme]);
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 -z-10" />;
+  }, [points, diversity, colors, spread, blur, resolvedTheme, sizeMultiplier]);
+
+  const canvasClassName = cn(
+    'pointer-events-none absolute -z-10',
+    centerOnScreen ? 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' : 'left-0 top-0',
+    className
+  );
+
+  return <canvas ref={canvasRef} className={canvasClassName} />;
 };
 
 export default ParticleCanvas;

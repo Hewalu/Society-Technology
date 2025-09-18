@@ -437,6 +437,26 @@ export default function CompareModelsPage() {
                 <p>
                   Blur σ: <span className="font-semibold text-slate-700 dark:text-slate-100">{model.defaults.blur.toFixed(2)}</span>
                 </p>
+                {colorConfig.length ? (
+                  <div className="mt-3 border-t border-slate-200/60 pt-3 dark:border-white/10">
+                    <p className="font-semibold text-slate-700 dark:text-slate-100">Farben im Partikelfeld</p>
+                    <ul className="mt-2 space-y-1">
+                      {colorConfig.map((color, index) => (
+                        <li key={`${color.name}-${index}`} className="flex items-center gap-2">
+                          <span
+                            className="inline-flex h-3 w-3 shrink-0 rounded-full border border-white/80 shadow-sm dark:border-white/20"
+                            style={{ backgroundColor: color.hex }}
+                            aria-hidden="true"
+                          />
+                          <span className="flex-1 text-slate-600 dark:text-slate-300">
+                            {color.name}
+                            <span className="ml-1 text-[11px] text-slate-500 dark:text-slate-400">({color.ratio}% Anteil)</span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
               </div>
 
               <Button
