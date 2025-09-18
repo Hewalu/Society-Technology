@@ -68,7 +68,6 @@ export function DemoOverlay() {
   const [progress, setProgress] = useState(0);
   const convergenceValueRef = useRef(convergence);
   const convergenceAnimationRef = useRef<number | null>(null);
-  const convergenceResolveRef = useRef<(() => void) | null>(null);
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
 
