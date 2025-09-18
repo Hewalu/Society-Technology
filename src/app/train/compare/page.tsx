@@ -279,7 +279,7 @@ export default function CompareModelsPage() {
                 </div>
               </details>
 
-              <details className="group rounded-2xl border border-white/60 dark:border-white/20 bg-white/60 dark:bg-slate-900/70 p-4 backdrop-blur">
+              {/* <details className="group rounded-2xl border border-white/60 dark:border-white/20 bg-white/60 dark:bg-slate-900/70 p-4 backdrop-blur">
                 <summary className="cursor-pointer list-none text-sm font-semibold text-slate-800 dark:text-slate-100">
                   Parameter justieren
                 </summary>
@@ -378,7 +378,7 @@ export default function CompareModelsPage() {
                     </div>
                   </div>
                 </div>
-              </details>
+              </details> */}
 
               <details className="rounded-2xl bg-white/80 dark:bg-slate-900/70 p-4 text-xs text-slate-600 dark:text-slate-300">
                 <summary className="cursor-pointer list-none text-sm font-semibold text-slate-700 dark:text-slate-100">
