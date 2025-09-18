@@ -535,38 +535,6 @@ const rawModelData: RawModelEntry[] = [
     },
   },
   {
-    provider: 'Meta',
-    model: 'LLaMA 3',
-    release_date: '2024-04-18',
-    training: {
-      tokens: 1.5e13,
-      parameters: 8.0e10,
-      notes: 'Tokenvolumen gem. Ankündigungen; genaue Verteilung unklar. Geschätzt.',
-    },
-    diversity: {
-      score_0_100: 68,
-      rationale: '30 Sprachen, starker Code-Anteil. Geschätzt.',
-    },
-    sources_breakdown_pct: {
-      blue_classic_web: 66,
-      red_social: 4,
-      green_academic: 6,
-      yellow_proprietary: 3,
-      gray_synthetic: 21,
-    },
-    transparency: {
-      score_0_100: 65,
-      rationale: 'Ähnlich 8B; Paper/volle Aufstellung noch knapp. Geschätzt.',
-    },
-    estimated_flags: {
-      training_tokens: true,
-      training_parameters: true,
-      diversity: true,
-      sources: true,
-      transparency: true,
-    },
-  },
-  {
     provider: 'xAI',
     model: 'Grok-1',
     release_date: '2023-11-04',
