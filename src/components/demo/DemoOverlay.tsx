@@ -66,7 +66,7 @@ export function DemoOverlay() {
   const [convergence, setConvergence] = useState(1);
   const [progress, setProgress] = useState(0);
   const convergenceValueRef = useRef(convergence);
-  const convergenceAnimationRef = useRef<number>();
+  const convergenceAnimationRef = useRef<number | null>(null);
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
 
@@ -221,9 +221,9 @@ export function DemoOverlay() {
     if (!isActive || !entries.length) return;
 
     animateConvergence(0.02, 500);
-    const expandTimeout = window.setTimeout(() => animateConvergence(1, 1100), 350);
+    const expandTimeout = window.setTimeout(() => animateConvergence(1, 1100), 250);
 
-    const collapseTimeout = window.setTimeout(() => animateConvergence(0.02, 800), 18000);
+    const collapseTimeout = window.setTimeout(() => animateConvergence(0.02, 800), 16500);
     const advanceTimeout = window.setTimeout(() => {
       setCurrentIndex((previous) => (previous + 1) % entries.length);
     }, 20000);
