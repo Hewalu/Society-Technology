@@ -14,6 +14,7 @@ const PROVIDER_SEQUENCE = ['aleph-alpha', 'anthropic', 'google', 'meta', 'openai
 const MIN_DIAMETER = 24;
 const MAX_DIAMETER = 96;
 const BASELINE_DIAMETER = (MIN_DIAMETER + MAX_DIAMETER) / 2;
+const COLLAPSED_CONVERGENCE = 0;
 
 const hexToRgbString = (hex: string) => {
   let parsed = hex.replace('#', '');
@@ -67,6 +68,7 @@ export function DemoOverlay() {
   const [progress, setProgress] = useState(0);
   const convergenceValueRef = useRef(convergence);
   const convergenceAnimationRef = useRef<number>();
+  const convergenceResolveRef = useRef<(() => void) | null>(null);
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
 
@@ -78,6 +80,12 @@ export function DemoOverlay() {
     return () => {
       if (convergenceAnimationRef.current) {
         cancelAnimationFrame(convergenceAnimationRef.current);
+        convergenceAnimationRef.current = undefined;
+      }
+
+      if (convergenceResolveRef.current) {
+        convergenceResolveRef.current();
+        convergenceResolveRef.current = null;
       }
     };
   }, []);
@@ -88,6 +96,18 @@ export function DemoOverlay() {
 
       if (convergenceAnimationRef.current) {
         cancelAnimationFrame(convergenceAnimationRef.current);
+        convergenceAnimationRef.current = undefined;
+      }
+
+      if (convergenceResolveRef.current) {
+        convergenceResolveRef.current();
+        convergenceResolveRef.current = null;
+      }
+
+      if (duration <= 0) {
+        convergenceValueRef.current = clampedTarget;
+        setConvergence(clampedTarget);
+        return Promise.resolve();
       }
 
       const startTime = performance.now();
@@ -95,23 +115,33 @@ export function DemoOverlay() {
 
       const easeInOut = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
 
-      const step = (now: number) => {
-        const elapsed = now - startTime;
-        const progressRatio = duration === 0 ? 1 : Math.min(Math.max(elapsed / duration, 0), 1);
-        const eased = easeInOut(progressRatio);
-        const nextValue = initial + (clampedTarget - initial) * eased;
-        convergenceValueRef.current = nextValue;
-        setConvergence(nextValue);
-
-        if (progressRatio < 1) {
-          convergenceAnimationRef.current = requestAnimationFrame(step);
-        } else {
+      return new Promise<void>((resolve) => {
+        const finish = () => {
           convergenceValueRef.current = clampedTarget;
           setConvergence(clampedTarget);
-        }
-      };
+          convergenceAnimationRef.current = undefined;
+          convergenceResolveRef.current = null;
+          resolve();
+        };
 
-      convergenceAnimationRef.current = requestAnimationFrame(step);
+        const step = (now: number) => {
+          const elapsed = now - startTime;
+          const progressRatio = Math.min(Math.max(elapsed / duration, 0), 1);
+          const eased = easeInOut(progressRatio);
+          const nextValue = initial + (clampedTarget - initial) * eased;
+          convergenceValueRef.current = nextValue;
+          setConvergence(nextValue);
+
+          if (progressRatio < 1) {
+            convergenceAnimationRef.current = requestAnimationFrame(step);
+          } else {
+            finish();
+          }
+        };
+
+        convergenceResolveRef.current = finish;
+        convergenceAnimationRef.current = requestAnimationFrame(step);
+      });
     },
     []
   );
@@ -150,23 +180,100 @@ export function DemoOverlay() {
   }, []);
 
   const currentEntry = entries[currentIndex];
-
   useEffect(() => {
     if (!isActive || !entries.length) {
       return;
     }
 
-    setCurrentIndex(0);
-    animateConvergence(0.02, 500);
+    let cancelled = false;
+    let index = 0;
+    const pendingTimeouts = new Map<number, () => void>();
 
-    const expandTimeout = window.setTimeout(() => {
-      animateConvergence(1, 1000);
-    }, 400);
+    const sleep = (ms: number) =>
+      new Promise<void>((resolve) => {
+        const timeoutId = window.setTimeout(() => {
+          pendingTimeouts.delete(timeoutId);
+          resolve();
+        }, ms);
+        pendingTimeouts.set(timeoutId, () => {
+          window.clearTimeout(timeoutId);
+          pendingTimeouts.delete(timeoutId);
+          resolve();
+        });
+      });
+
+    const runCycle = async () => {
+      index = 0;
+      setCurrentIndex(index);
+      setProgress(0);
+
+      await animateConvergence(COLLAPSED_CONVERGENCE, 450);
+      if (cancelled) return;
+
+      await sleep(150);
+      if (cancelled) return;
+
+      await animateConvergence(1, 1100);
+      if (cancelled) return;
+
+      const cycleDuration = 20000;
+      const collapseDuration = 900;
+      const collapsedPause = 220;
+      const preExpandFrameDelay = 16;
+      const expandDuration = 1100;
+      const preCollapseBuffer = 350; // begin collapsing slightly early to guarantee full animation
+      const displayDuration = Math.max(
+        0,
+        cycleDuration - collapseDuration - collapsedPause - preExpandFrameDelay - expandDuration - preCollapseBuffer
+      );
+
+      const waitForNextFrame = () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => resolve());
+        });
+
+      while (!cancelled) {
+        await sleep(displayDuration);
+        if (cancelled) break;
+
+        await animateConvergence(COLLAPSED_CONVERGENCE, collapseDuration);
+        if (cancelled) break;
+
+        await sleep(collapsedPause);
+        if (cancelled) break;
+
+        index = (index + 1) % entries.length;
+        setCurrentIndex(index);
+        setProgress(0);
+
+        await waitForNextFrame();
+        if (cancelled) break;
+
+        await sleep(preExpandFrameDelay);
+        if (cancelled) break;
+
+        await animateConvergence(1, expandDuration);
+        if (cancelled) break;
+      }
+    };
+
+    void runCycle();
 
     return () => {
-      window.clearTimeout(expandTimeout);
+      cancelled = true;
+      pendingTimeouts.forEach((resolve) => resolve());
+      pendingTimeouts.clear();
+
+      if (convergenceAnimationRef.current) {
+        cancelAnimationFrame(convergenceAnimationRef.current);
+        convergenceAnimationRef.current = undefined;
+      }
+      if (convergenceResolveRef.current) {
+        convergenceResolveRef.current();
+        convergenceResolveRef.current = null;
+      }
     };
-  }, [isActive, entries.length, animateConvergence]);
+  }, [animateConvergence, entries, isActive]);
 
   useEffect(() => {
     if (!isActive) return;
@@ -216,24 +323,6 @@ export function DemoOverlay() {
       window.clearInterval(intervalId);
     };
   }, [isActive, currentIndex, entries.length]);
-
-  useEffect(() => {
-    if (!isActive || !entries.length) return;
-
-    animateConvergence(0.02, 500);
-    const expandTimeout = window.setTimeout(() => animateConvergence(1, 1100), 350);
-
-    const collapseTimeout = window.setTimeout(() => animateConvergence(0.02, 800), 18000);
-    const advanceTimeout = window.setTimeout(() => {
-      setCurrentIndex((previous) => (previous + 1) % entries.length);
-    }, 20000);
-
-    return () => {
-      window.clearTimeout(expandTimeout);
-      window.clearTimeout(collapseTimeout);
-      window.clearTimeout(advanceTimeout);
-    };
-  }, [animateConvergence, isActive, currentIndex, entries.length]);
 
   if (!isActive || !entries.length || !currentEntry) {
     return null;

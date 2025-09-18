@@ -20,8 +20,6 @@ interface ParticleCanvasProps {
   convergence?: number;
 }
 
-const PARTICLE_MULTIPLIER = 5; // display multiple particles per dataset point
-
 const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
   points,
   diversity,
@@ -78,6 +76,14 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
     const particleAlpha = isDarkMode ? 0.88 : 0.78;
     const particleGlow = (isDarkMode ? 6 : 4) + blurSigma * (isDarkMode ? 1.6 : 1.3);
 
+    const getConvergenceScale = () => {
+      const current = Math.min(Math.max(convergenceRef.current, 0), 1);
+      if (current <= 0) {
+        return 0;
+      }
+      return Math.pow(current, 0.85);
+    };
+
     class Particle {
       x: number;
       y: number;
@@ -100,7 +106,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
         // Adjust orbit radius based on diversity and external spread control
         const baseOrbit = 40 + Math.random() * (25 + diversity * 2.5);
         this.baseOrbitRadius = baseOrbit * spreadFactor;
-        const seedConvergence = 0.05 + convergenceRef.current * 0.95;
+        const seedConvergence = getConvergenceScale();
         this.orbitRadius = this.baseOrbitRadius * seedConvergence;
       }
 
@@ -116,7 +122,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
         const centerDy = orbitCenterY - this.y;
         const centerDist = Math.sqrt(centerDx * centerDx + centerDy * centerDy);
 
-        const convergenceFactor = 0.05 + convergenceRef.current * 0.95;
+        const convergenceFactor = getConvergenceScale();
         const desiredOrbit = this.baseOrbitRadius * convergenceFactor;
         this.orbitRadius += (desiredOrbit - this.orbitRadius) * 0.08;
 
@@ -125,11 +131,17 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
         ay += centerDy * 0.0005;
 
         // Repulsion if too close to center
-        const minRingRadius = 12 + convergenceRef.current * 38;
+        const minRingRadius = 4 + getConvergenceScale() * 42;
         if (centerDist < minRingRadius) {
           const repelForce = 0.05 * (minRingRadius - centerDist);
-          ax -= (centerDx / centerDist) * repelForce;
-          ay -= (centerDy / centerDist) * repelForce;
+          if (centerDist > 0.0001) {
+            ax -= (centerDx / centerDist) * repelForce;
+            ay -= (centerDy / centerDist) * repelForce;
+          } else {
+            const angle = this.angle;
+            ax -= Math.cos(angle) * repelForce;
+            ay -= Math.sin(angle) * repelForce;
+          }
         }
 
         // Orbital motion
@@ -174,7 +186,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
     const initParticles = () => {
       particles = [];
       syncCenter(false);
-      const totalParticles = points > 0 ? Math.round(points * PARTICLE_MULTIPLIER) : 0;
+      const totalParticles = points > 0 ? Math.round(points) : 0;
 
       if (!colors.length || totalParticles === 0) {
         return;
@@ -223,7 +235,7 @@ const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
           // Skew distribution towards center
           const randomFactor = Math.pow(Math.random(), 3);
           const radius = minRadius + randomFactor * (maxRadius - minRadius);
-          const seedConvergence = 0.05 + convergenceRef.current * 0.95;
+      const seedConvergence = getConvergenceScale();
           const spawnRadius = radius * seedConvergence;
 
           const x = center.x + Math.cos(angle) * spawnRadius;
