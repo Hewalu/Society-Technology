@@ -130,17 +130,17 @@ export default function CompareModelsPage() {
     return Math.max(0.2, structureDiameter / baselineDiameter);
   }, [structureDiameter]);
 
-  const handleColorRatioChange = (index: number, ratio: number) => {
-    setColorConfig((previous) =>
-      previous.map((entry, i) => (i === index ? { ...entry, ratio } : entry))
-    );
-  };
+  // const handleColorRatioChange = (index: number, ratio: number) => {
+  //   setColorConfig((previous) =>
+  //     previous.map((entry, i) => (i === index ? { ...entry, ratio } : entry))
+  //   );
+  // };
 
-  const handleColorHexChange = (index: number, hex: string) => {
-    setColorConfig((previous) =>
-      previous.map((entry, i) => (i === index ? { ...entry, hex } : entry))
-    );
-  };
+  // const handleColorHexChange = (index: number, hex: string) => {
+  //   setColorConfig((previous) =>
+  //     previous.map((entry, i) => (i === index ? { ...entry, hex } : entry))
+  //   );
+  // };
 
   const handleProviderChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setProviderId(event.target.value);
