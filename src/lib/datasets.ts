@@ -24,7 +24,7 @@ export const datasets: Dataset[] = [
     },
     {
         name: 'Soziale Medien',
-        color: { name: 'Lila', rgb: '224, 122, 47)', ratio: 0 },
+        color: { name: 'Lila', rgb: '224, 122, 47', ratio: 0 },
         description: 'Reddit, X (Twitter), Foren-Kommentare. Liefert Dialog- und Umgangssprache, aber toxisch, laut und bias-anfällig.',
         cost: 20,
         diversity: 30,

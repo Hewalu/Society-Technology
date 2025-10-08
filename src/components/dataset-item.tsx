@@ -26,6 +26,15 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
     const { selectedDatasets, toggleDataset, setPreview, clearPreview } = useUser();
     const isSelected = selectedDatasets.has(dataset.name);
     const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const datasetColor = dataset.color?.rgb ?? '';
+    const selectedBackgroundStyle = isSelected && datasetColor
+        ? { backgroundColor: `rgba(${datasetColor}, 0.85)` }
+        : undefined;
+    const labelTextClass = isSelected ? 'text-white' : 'text-slate-900 dark:text-slate-100';
+    const infoIconClass = isSelected ? 'text-white/80' : 'text-slate-600 dark:text-slate-300';
+    const infoIconStyle = !isSelected && datasetColor
+        ? { color: `rgb(${datasetColor})` }
+        : undefined;
 
     const handleToggle = () => {
         console.log("Handle Toggle", dataset.name);
@@ -52,24 +61,28 @@ export function DatasetItem({ dataset }: DatasetItemProps) {
         <div
             className={`flex items-center justify-between p-2 px-4 py-3 rounded-md cursor-pointer transition-colors ${
                 isSelected
-                    ? 'bg-indigo-100 dark:bg-indigo-500/30'
+                    ? 'ring-1 ring-slate-900/10 dark:ring-white/20'
                     : 'bg-white/80 dark:bg-slate-900/70'
             }`}
             onClick={handleToggle}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            style={selectedBackgroundStyle}
         >
             <div className="flex items-center gap-4 justify-between w-full">
                 <div className="flex items-center gap-4">
                     <Checkbox checked={isSelected} className="bg-white dark:bg-slate-900" />
-                    <span className="font-medium text-slate-900 dark:text-slate-100">{dataset.name}</span>
+                    <span className={`font-medium ${labelTextClass}`}>{dataset.name}</span>
                 </div>
                 <TooltipProvider>
                     <Tooltip>
                         <Dialog>
                             <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
                                 <DialogTrigger asChild>
-                                    <Info className="h-[18px] w-[18px] text-slate-600 dark:text-slate-300" />
+                                    <Info
+                                        className={`h-[18px] w-[18px] ${infoIconClass}`}
+                                        style={infoIconStyle}
+                                    />
                                 </DialogTrigger>
                             </TooltipTrigger>
                             <DialogContent onClick={(e) => e.stopPropagation()}>
